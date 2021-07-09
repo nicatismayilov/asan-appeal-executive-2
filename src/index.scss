@@ -1,0 +1,57 @@
+@import "./printify/printify.min.css";
+@import "./styles/colors";
+@import "./styles/layout";
+@import "./styles/sizes";
+@import "./styles/typography";
+
+* {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  position: relative;
+}
+
+#tooltips {
+  position: relative;
+}
+
+.app {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+.light {
+  --main-bg-color: #f0f2f5;
+  --modal-title-color: #424242;
+}
+
+.dark {
+  --main-bg-color: #18191a;
+  --modal-title-color: #959596;
+}
+
+.main-bg-color {
+  background-color: var(--main-bg-color);
+  transition: background-color 50ms;
+  height: 100%;
+}
+
+.transition {
+  transition: width 200ms ease;
+}
+
+.modal-title {
+  color: var(--modal-title-color);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 36px;
+}

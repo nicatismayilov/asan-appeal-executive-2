@@ -1,0 +1,45 @@
+.light {
+  --grey-1: #757575;
+  --grey-2: #616161;
+  --grey-3: #424242;
+  --grey-4: #212121;
+}
+
+.dark {
+  --grey-1: #a5a5a5;
+  --grey-2: #c9c7c7;
+  --grey-3: #d3d2d2;
+  --grey-4: #d5d5d5;
+}
+
+.grey-1 {
+  background-color: var(--grey-1);
+
+  &--text {
+    color: var(--grey-1);
+  }
+}
+
+.grey-2 {
+  background-color: var(--grey-2);
+
+  &--text {
+    color: var(--grey-2);
+  }
+}
+
+.grey-3 {
+  background-color: var(--grey-3);
+
+  &--text {
+    color: var(--grey-3);
+  }
+}
+
+.grey-4 {
+  background-color: var(--grey-4);
+
+  &--text {
+    color: var(--grey-4);
+  }
+}

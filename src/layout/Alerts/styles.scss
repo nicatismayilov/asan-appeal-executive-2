@@ -1,0 +1,14 @@
+.alerts {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000000;
+}
+
+.alert-wrapper {
+  overflow: hidden;
+  margin-top: 10px;
+}
