@@ -2,7 +2,7 @@ import { useEffect, useRef, useMemo } from "react";
 import { useParams, useHistory, useRouteMatch } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useRect } from "@reach/rect";
-import { useFormik } from "formik";
+// import { useFormik } from "formik";
 
 import { getRequest } from "store/requests/actions";
 import { selectRequest, selectRequestLoading } from "store/requests/selectors";
@@ -13,7 +13,7 @@ import Scrollbar from "components/Scrollbar";
 import Icon from "components/Icon";
 import Accordion, { AccordionData } from "components/Accordion";
 import Map from "components/Map";
-import TextArea from "components/TextArea";
+// import TextArea from "components/TextArea";
 import HistoryItem from "./components/HistoryItem";
 
 import generateKey from "utils/generateKey";
@@ -64,7 +64,7 @@ const RequestDetails: React.FC = () => {
 			<Scrollbar>
 				<div className='px-10 py-6 d-flex align-center'>
 					<button className='back-btn' onClick={handleGoBack}>
-						<Icon name='back' width={20} height={20} />
+						<Icon icon='back' width={20} height={20} />
 					</button>
 
 					<h1 className='headline font-weight-medium grey-3--text'>Müraciət məlumatları</h1>

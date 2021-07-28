@@ -1,148 +1,248 @@
-import { useState, useEffect, useCallback, memo, useRef, ReactNode } from "react";
+import { useState, useEffect, useCallback, memo, useRef, ReactNode, useMemo } from "react";
+import { useTable, usePagination, useSortBy, Column, SortingRule } from "react-table";
+import classnames from "classnames";
 
-import TableHeader from "./components/TableHeader";
-import TableLoading from "./components/TableLoading";
-import TableRows from "./components/TableRows";
 import TablePagination, { RefObject as TablePaginationRef } from "./components/TablePagination";
+import Icon from "components/Icon";
+import Spinner from "components/Spinner";
+import Tooltip from "components/Tooltip";
 
-import { ColumnDefinitionType } from "./types";
+import { TableColumn } from "./types";
 
 import "./styles.scss";
 
-interface Props<T, K extends keyof T> {
+export type { TableColumn } from "./types";
+export type Sorter<T> = SortingRule<T>[];
+
+interface Props<T extends object> {
 	title?: string;
 	data: T[];
-	columns: ColumnDefinitionType<T, K>[];
+	columns: TableColumn<T>[];
 	totalCount: number;
 	loading?: boolean;
-	pagination?: Pagination;
 	serverSide?: boolean;
+	virtual?: boolean;
+	defaultPageIndex?: number;
+	defaultPageSize?: number;
+	pageSizeOptions?: number[];
+	showPageSizeOptions?: boolean;
+	showTotal?: (total: number, range: [number, number]) => void | ReactNode;
 
-	onRowsEnd?: (status: boolean) => void;
-	onChange?: (p: { activePage: number; rowCount: number }) => void;
+	onChange?: (p: Pagination, sorter: Sorter<T>) => void;
 }
-
-export interface TableColumn<T, K extends keyof T> extends ColumnDefinitionType<T, K> {}
 
 export interface Pagination {
-	defaultRowCount?: number;
-	activePage?: number;
-	totalCount?: number;
-	rowCountOptions?: number[];
-	showRowCountChanger?: boolean;
-	showTotal?: (total: number, range: [number, number]) => void | ReactNode;
-	rowCount?: number;
+	pageSize: number;
+	pageIndex: number;
 }
 
-const defaultPagination: Pagination = {
-	defaultRowCount: 10,
-	activePage: 1,
-	totalCount: 0,
-	rowCountOptions: [],
-	showRowCountChanger: false,
-	showTotal: undefined,
-};
-
-const Table = <T, K extends keyof T>(props: Props<T, K>) => {
+const Table = <T extends object>(props: Props<T>) => {
 	const {
 		columns,
 		data,
-		title,
 		loading = false,
 		totalCount,
-		pagination = defaultPagination,
-		serverSide = false,
+		serverSide = true,
+		defaultPageIndex = 0,
+		defaultPageSize = 10,
+		showPageSizeOptions = false,
+		showTotal,
+		pageSizeOptions = [],
 	} = props;
-	const { onRowsEnd, onChange } = props;
-	const [activePage, setActivePage] = useState(1);
-	const [rowCount, setRowCount] = useState(pagination?.defaultRowCount || 10);
-	const [offset, setOffset] = useState(rowCount * (activePage - 1));
+	const { onChange } = props;
+	const [controlledPageSize, setControlledPageSize] = useState(defaultPageSize);
 	const paginationRef = useRef<TablePaginationRef>(null);
 
-	const handlePageChange = useCallback((page: number) => {
-		setActivePage(page);
+	// @ts-ignore
+	const defaultColumn = useMemo<Column<T>>(() => {
+		return {
+			disableSortBy: true,
+		};
 	}, []);
 
-	const handleRowCountChange = useCallback(
-		(rowCount: number) => {
-			setRowCount(rowCount);
-
-			if (rowCount * activePage > totalCount) setActivePage(Math.ceil(totalCount / rowCount));
+	const tableInstance = useTable(
+		{
+			columns,
+			data,
+			manualPagination: true,
+			pageCount: Math.ceil(totalCount / controlledPageSize),
+			manualSortBy: true,
+			initialState: { pageIndex: defaultPageIndex, pageSize: defaultPageSize },
+			defaultColumn,
+			autoResetSortBy: false,
+			defaultCanSort: data.length > 0,
 		},
-		[activePage, totalCount]
+		useSortBy,
+		usePagination
 	);
 
-	const offsetChangeEffect = () => {
-		setOffset(rowCount * (activePage - 1));
-	};
+	const {
+		getTableProps,
+		getTableBodyProps,
+		headerGroups,
+		prepareRow,
+		page,
+		pageOptions,
+		state,
+		nextPage,
+		previousPage,
+		canNextPage,
+		canPreviousPage,
+		setPageSize,
+		gotoPage,
+	} = tableInstance;
+	const { pageIndex, pageSize, sortBy } = state;
 
-	const resetPaginationEffect = () => {
+	useEffect((): void => console.log(sortBy), [sortBy]);
+
+	const handlePageChange = useCallback(
+		(page: number) => {
+			gotoPage(page);
+		},
+		[gotoPage]
+	);
+
+	const handlePageSizeChange = useCallback(
+		(pageSize: number) => {
+			setControlledPageSize(pageSize);
+			setPageSize(pageSize);
+		},
+		[setPageSize]
+	);
+
+	useEffect(() => {
 		if (!serverSide) paginationRef.current?.reset();
-	};
+	}, [data, serverSide]);
 
-	const changeEffect = () => {
-		onChange &&
-			onChange({
-				activePage,
-				rowCount,
-			});
-	};
-
-	useEffect(offsetChangeEffect, [activePage, rowCount]);
-	useEffect(resetPaginationEffect, [data, serverSide]);
-	useEffect(changeEffect, [onChange, activePage, rowCount]);
+	useEffect(() => {
+		if (onChange) {
+			onChange({ pageIndex, pageSize }, sortBy);
+		}
+	}, [onChange, pageSize, pageIndex, sortBy]);
 
 	return (
 		<div className='table-container'>
-			<div className='table'>
-				<div className='table-title'>
-					<h4 className='table-title-text'>{title}</h4>
-
-					{totalCount > 0 && (
-						<TablePagination
-							ref={paginationRef}
-							activePage={activePage}
-							totalCount={totalCount}
-							rowCount={rowCount}
-							onPageChange={handlePageChange}
-							onRowCountChange={handleRowCountChange}
-							showTotal={pagination?.showTotal}
-							showRowCountChanger={pagination.showRowCountChanger}
-							rowCountOptions={pagination.rowCountOptions}
-						/>
-					)}
-				</div>
-
-				<TableHeader columns={columns} />
-
-				{loading ? (
-					<TableLoading columns={columns} data={data} rowCount={rowCount} />
-				) : (
-					<TableRows
-						data={data}
-						columns={columns}
-						rowCount={rowCount}
-						offset={offset}
-						onRowsEnd={onRowsEnd}
-						serverSide={serverSide}
+			<div className='pa-10 pt-6 d-flex justify-end'>
+				{totalCount > 0 && (
+					<TablePagination
+						ref={paginationRef}
+						pageIndex={pageIndex}
+						totalCount={totalCount}
+						pageSize={pageSize}
+						onPageChange={handlePageChange}
+						onPageSizeChange={handlePageSizeChange}
+						showTotal={showTotal}
+						showPageSizeOptions={showPageSizeOptions}
+						pageSizeOptions={pageSizeOptions}
+						canNextPage={canNextPage}
+						canPreviousPage={canPreviousPage}
+						nextPage={nextPage}
+						previousPage={previousPage}
+						pageOptions={pageOptions}
 					/>
 				)}
+			</div>
 
-				<div className='px-10 pt-10 py-6 d-flex justify-end'>
-					{totalCount > 0 && (
-						<TablePagination
-							ref={paginationRef}
-							activePage={activePage}
-							totalCount={totalCount}
-							rowCount={rowCount}
-							onPageChange={handlePageChange}
-							showTotal={pagination?.showTotal}
-							onRowCountChange={handleRowCountChange}
-							rowCountOptions={pagination.rowCountOptions}
-							showRowCountChanger={pagination.showRowCountChanger}
-						/>
-					)}
-				</div>
+			<div
+				className={classnames({
+					"table-area": true,
+					"table-area--loading": loading,
+				})}
+			>
+				<table {...getTableProps()} className='table'>
+					<thead className='table-thead'>
+						{headerGroups.map((headerGroup) => (
+							<tr className='pa-0' {...headerGroup.getHeaderGroupProps()}>
+								{headerGroup.headers.map((column) => (
+									<th
+										className='table-th'
+										{...column.getHeaderProps(column.getSortByToggleProps())}
+										title={undefined}
+									>
+										{column.canSort ? (
+											<div className='w-100 d-flex justify-center'>
+												<Tooltip disabled={!column.canSort} content='Sortlaşdır'>
+													<div className='pr-12'>{column.render("Header")}</div>
+
+													<div className='table-th-sort'>
+														<Icon
+															icon='sort-up'
+															style={{
+																fill:
+																	column.isSorted && !column.isSortedDesc ? "#4759e4" : undefined,
+															}}
+														/>
+														<Icon
+															icon='sort-down'
+															style={{
+																fill:
+																	column.isSorted && column.isSortedDesc ? "#4759e4" : undefined,
+															}}
+														/>
+													</div>
+												</Tooltip>
+											</div>
+										) : (
+											column.render("Header")
+										)}
+									</th>
+								))}
+							</tr>
+						))}
+					</thead>
+
+					<tbody className='table-tbody' {...getTableBodyProps()}>
+						{page.map((row) => {
+							prepareRow(row);
+
+							return (
+								<tr className='table-tr' {...row.getRowProps()}>
+									{row.cells.map((cell) => (
+										<td className='table-td' {...cell.getCellProps()}>
+											{cell.render("Cell")}
+										</td>
+									))}
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+
+				{loading && (
+					<div
+						style={{ position: "absolute", top: "50%", left: "50%", transform: "translateX(-50%)" }}
+					>
+						<Spinner size={50} />
+					</div>
+				)}
+
+				{page.length === 0 && (
+					<div className='d-flex flex-column align-center justify-center w-100'>
+						<Icon icon='empty-box' className='table-no-data-icon' />
+						<span className='table-no-data-text'>Məlumat yoxdur</span>
+					</div>
+				)}
+			</div>
+
+			<div className='pa-10 pt-6 d-flex justify-end'>
+				{totalCount > 0 && (
+					<TablePagination
+						ref={paginationRef}
+						pageIndex={pageIndex}
+						totalCount={totalCount}
+						pageSize={pageSize}
+						onPageChange={handlePageChange}
+						onPageSizeChange={handlePageSizeChange}
+						showTotal={showTotal}
+						showPageSizeOptions={showPageSizeOptions}
+						pageSizeOptions={pageSizeOptions}
+						canNextPage={canNextPage}
+						canPreviousPage={canPreviousPage}
+						nextPage={nextPage}
+						previousPage={previousPage}
+						pageOptions={pageOptions}
+					/>
+				)}
 			</div>
 		</div>
 	);

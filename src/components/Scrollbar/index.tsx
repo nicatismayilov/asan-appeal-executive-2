@@ -1,11 +1,13 @@
+import React from "react";
 import { CSSProperties, useMemo, useCallback } from "react";
-import { Scrollbars } from "react-custom-scrollbars";
+import { Scrollbars } from "react-custom-scrollbars-2";
 import "./styles.scss";
 
 interface Props {
 	hide?: boolean;
 	renderHorizontal?: boolean;
 	scrollbarRef?: React.LegacyRef<Scrollbars>;
+	viewRef?: React.LegacyRef<HTMLDivElement>;
 	autoHeight?: boolean;
 	autoHeightMax?: number;
 	autoHeightMin?: number;
@@ -16,6 +18,7 @@ const Scrollbar: React.FC<Props> = (props) => {
 		hide = false,
 		renderHorizontal = false,
 		scrollbarRef,
+		viewRef,
 		autoHeight = false,
 		autoHeightMin = 50,
 		autoHeightMax = 3500,
@@ -28,12 +31,12 @@ const Scrollbar: React.FC<Props> = (props) => {
 	const handleRenderView = useCallback(
 		(props) => {
 			return renderHorizontal ? (
-				<div {...props} className={`scrollbar-view-horizontal`} />
+				<div ref={viewRef} {...props} className={`scrollbar-view-horizontal`} />
 			) : (
-				<div {...props} className={`scrollbar-view-vertical`} />
+				<div ref={viewRef} {...props} className={`scrollbar-view-vertical`} />
 			);
 		},
-		[renderHorizontal]
+		[renderHorizontal, viewRef]
 	);
 
 	const handleRenderThumbVertical = useCallback((props) => {

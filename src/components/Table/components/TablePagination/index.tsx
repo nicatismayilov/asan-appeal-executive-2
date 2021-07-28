@@ -1,6 +1,4 @@
 import {
-	useState,
-	useEffect,
 	useCallback,
 	useMemo,
 	Fragment,
@@ -11,21 +9,23 @@ import {
 } from "react";
 import classnames from "classnames";
 
-import Select from "../../../Select";
-
-import { ReactComponent as ChevronLeft } from "../../assets/chevron-left.svg";
-import { ReactComponent as ChevronRight } from "../../assets/chevron-right.svg";
+import Select from "components/Select";
+import Icon from "components/Icon";
 
 export interface Props {
-	activePage: number;
+	pageIndex: number;
+	pageSize: number;
+	showPageSizeOptions: boolean;
+	pageSizeOptions: number[];
+	pageOptions: number[];
 	totalCount: number;
-	rowCount: number;
-	showRowCountChanger?: boolean;
-	rowCountOptions?: number[];
+	canPreviousPage: boolean;
+	canNextPage: boolean;
 
+	nextPage: () => void;
+	previousPage: () => void;
 	onPageChange: (page: number) => void;
-	onRowCountChange?: (rowCount: number) => void;
-
+	onPageSizeChange?: (pageSize: number) => void;
 	showTotal?: (total: number, range: [number, number]) => void | ReactNode;
 }
 
@@ -35,99 +35,61 @@ export interface RefObject {
 
 const baseClass = "table-pagination";
 
+const pageSizeIdFromValue = (pageSize: number) => `${pageSize}`;
+const pageIndexIdFromValue = (pageIndex: number) => `${pageIndex}`;
+
+const pageSizeRender = (pageSize: number) => `${pageSize} / səhifə`;
+const pageIndexRender = (pageIndex: number) => pageIndex + 1;
+
 const TablePagination = forwardRef<RefObject, Props>((props, ref) => {
 	const {
-		activePage = 1,
+		pageIndex,
+		pageSize,
+		showPageSizeOptions,
+		pageOptions,
+		pageSizeOptions,
 		totalCount,
-		rowCount,
-		showRowCountChanger = false,
-		rowCountOptions = [10, 20, 50, 100],
+		canNextPage,
+		canPreviousPage,
 	} = props;
-	const { onPageChange, showTotal, onRowCountChange } = props;
-	const [visiblePages, setVisiblePages] = useState<number[]>([]);
+	const { onPageChange, showTotal, onPageSizeChange, nextPage, previousPage } = props;
 
 	useImperativeHandle(ref, () => ({
 		reset: () => {
-			onPageChange(1);
+			onPageChange(0);
 		},
 	}));
 
 	const range = useMemo<[number, number]>(() => {
-		return [
-			(activePage - 1) * rowCount + 1,
-			activePage * rowCount < totalCount ? activePage * rowCount : totalCount,
-		];
-	}, [activePage, rowCount, totalCount]);
+		const left = pageIndex * pageSize + 1;
+		const right = (pageIndex + 1) * pageSize < totalCount ? (pageIndex + 1) * pageSize : totalCount;
 
-	// const rowCountSelectOptions = useMemo<SelectValue[]>(() => {
-	// 	return Array.from(new Set([...rowCountOptions, rowCount]))
-	// 		.sort((opt1, opt2) => opt1 - opt2)
-	// 		.map((opt) => ({
-	// 			id: opt,
-	// 			text: `${opt} / səhifə`,
-	// 		}));
-	// }, [rowCountOptions, rowCount]);
+		return [left, right];
+	}, [pageIndex, pageSize, totalCount]);
 
-	// const rowCountSelectValue = useMemo<SelectValue>(() => {
-	// 	return { id: rowCount, text: `${rowCount} / səhifə` };
-	// }, [rowCount]);
-
-	const pageCount = useMemo(() => {
-		return Math.ceil(totalCount / rowCount);
-	}, [totalCount, rowCount]);
-
-	const filterPages = (visiblePages: number[], pageCount: number) => {
-		return visiblePages.filter((page) => page <= pageCount);
-	};
-
-	const getVisiblePages = useCallback((page: number, total: number) => {
-		if (total < 7) {
-			return filterPages([1, 2, 3, 4, 5, 6], total);
-		} else {
-			if (page % 5 >= 0 && page > 4 && page + 2 < total) {
-				return [1, page - 1, page, page + 1, total];
-			} else if (page % 5 >= 0 && page > 4 && page + 2 >= total) {
-				return [1, total - 3, total - 2, total - 1, total];
-			} else {
-				return [1, 2, 3, 4, total];
+	const handlePageSizeChange = useCallback(
+		(pageSize: number | undefined) => {
+			if (pageSize && onPageSizeChange) {
+				onPageSizeChange(pageSize);
 			}
-		}
-	}, []);
-
-	const handleRowCountChange = useCallback(
-		(val: number | undefined) => {
-			val && onRowCountChange && onRowCountChange(val);
 		},
-		[onRowCountChange]
+		[onPageSizeChange]
 	);
 
-	const visiblePagesChangeEffect = () => {
-		const visiblePages = getVisiblePages(activePage, pageCount);
-
-		setVisiblePages(filterPages(visiblePages, pageCount));
-	};
-
-	const handleChangePage = (page: number) => {
-		if (page === activePage) return;
-
-		onPageChange(page);
-	};
+	const handlePageChange = useCallback(
+		(pageIndex: number | undefined) => {
+			if (pageIndex || pageIndex === 0) onPageChange(pageIndex);
+		},
+		[onPageChange]
+	);
 
 	const handlePrevClick = () => {
-		activePage !== 1 && handleChangePage(activePage - 1);
+		if (canPreviousPage) previousPage();
 	};
 
 	const handleNextClick = () => {
-		activePage !== pageCount && handleChangePage(activePage + 1);
+		if (canNextPage) nextPage();
 	};
-
-	// const activePageChangeEffect = () => {
-	// 	console.count("active page change effect");
-	// 	onPageChange(activePage);
-	// };
-
-	useEffect(visiblePagesChangeEffect, [activePage, pageCount, getVisiblePages]);
-	// useEffect(activePageChangeEffect, [activePage, onPageChange]);
 
 	return (
 		<div className={baseClass}>
@@ -135,63 +97,50 @@ const TablePagination = forwardRef<RefObject, Props>((props, ref) => {
 				<div className={`${baseClass}-total`}>{showTotal(totalCount, range) || null}</div>
 			)}
 
-			{pageCount !== 1 && (
+			{pageOptions.length !== 1 && (
 				<>
-					<div className={`${baseClass}-control`} onClick={handlePrevClick}>
-						<ChevronLeft />
-					</div>
-
-					<div className={`${baseClass}-visible-pages`}>
-						{visiblePages.map((page, idx, array) => {
-							return (
-								<Fragment key={page}>
-									{array[idx - 1] + 2 < page ? (
-										<>
-											<div className={`${baseClass}-page-button ${baseClass}-page-button--filler`}>
-												{`....`}
-											</div>
-
-											<div
-												className={classnames({
-													"table-pagination-page-button": true,
-													"table-pagination-page-button--active": page === activePage,
-												})}
-												onClick={() => handleChangePage(page)}
-											>
-												{page}
-											</div>
-										</>
-									) : (
-										<div
-											className={classnames({
-												"table-pagination-page-button": true,
-												"table-pagination-page-button--active": page === activePage,
-											})}
-											onClick={() => handleChangePage(page)}
-										>
-											{page}
-										</div>
-									)}
-								</Fragment>
-							);
+					<div
+						className={classnames({
+							[`${baseClass}-control`]: true,
+							[`${baseClass}-control--disabled`]: !canPreviousPage,
 						})}
+						onClick={handlePrevClick}
+					>
+						<Icon icon='left' />
 					</div>
 
-					<div className={`${baseClass}-control`} onClick={handleNextClick}>
-						<ChevronRight />
+					<div
+						className={classnames({
+							[`${baseClass}-control`]: true,
+							[`${baseClass}-control--disabled`]: !canNextPage,
+						})}
+						onClick={handleNextClick}
+					>
+						<Icon icon='right' />
+					</div>
+
+					<div className={`${baseClass}-page-index-select`}>
+						<Select
+							name='pageIndex'
+							onChange={handlePageChange}
+							options={pageOptions}
+							value={pageIndex}
+							idFromValue={pageIndexIdFromValue}
+							render={pageIndexRender}
+						/>
 					</div>
 				</>
 			)}
 
-			{showRowCountChanger && (
-				<div className={`${baseClass}-row-count-changer`}>
+			{showPageSizeOptions && (
+				<div className={`${baseClass}-page-size-select`}>
 					<Select
-						name='table-pagination-row-count-changer'
-						options={rowCountOptions}
-						value={rowCount}
-						idFromValue={(count) => `${count}`}
-						render={(rowCount) => `${rowCount} / səhifə`}
-						onChange={handleRowCountChange}
+						name='pageSize'
+						options={pageSizeOptions}
+						value={pageSize}
+						idFromValue={pageSizeIdFromValue}
+						render={pageSizeRender}
+						onChange={handlePageSizeChange}
 					/>
 				</div>
 			)}

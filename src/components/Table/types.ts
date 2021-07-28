@@ -1,19 +1,6 @@
-import { CSSProperties } from "react";
+import { ReactNode } from "react";
+import { Column } from "react-table";
 
-export type ColumnDefinitionType<T, K extends keyof T> = {
-	key: K;
-	header: string;
-	width: number | string;
-	filters?: TableFilter[];
-	styles?: CSSProperties;
-
-	render?: (record: T) => any;
-	skeletonLoader?: (record: T) => any;
-	onFilter?: (value: TableFilter, record: T) => boolean;
+export type TableColumn<T extends object> = Column<T> & {
+	skeletonLoader?: (record: T) => ReactNode | null;
 };
-
-export interface TableFilter {
-	text: string;
-	value: string;
-	children?: TableFilter[];
-}

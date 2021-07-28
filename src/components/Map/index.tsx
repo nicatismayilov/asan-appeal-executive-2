@@ -3,8 +3,6 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { Icon as LeafletIcon, Map as MapType } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import MapBox, { Marker as MapBoxMarker } from "@urbica/react-map-gl";
-
 import generateKey from "utils/generateKey";
 
 import marker from "../Icon/svg/marker.svg";
@@ -32,13 +30,13 @@ const Map: React.FC<Props> = (props) => {
 	const { height = 200, width = 400, longitude, latitude, center, zoom = 13 } = props;
 	const [map, setMap] = useState<MapType>();
 	const containerKeyRef = useRef(generateKey());
-	const [viewport, setViewport] = useState({
-		zoom,
-		latitude,
-		longitude,
-		width,
-		height,
-	});
+	// const [viewport, setViewport] = useState({
+	// 	zoom,
+	// 	latitude,
+	// 	longitude,
+	// 	width,
+	// 	height,
+	// });
 
 	useEffect(() => {
 		containerKeyRef.current = generateKey();
@@ -46,35 +44,20 @@ const Map: React.FC<Props> = (props) => {
 
 	return (
 		<div className='map' style={{ height, width }}>
-			{/* <MapContainer
+			<MapContainer
 				key={containerKeyRef.current}
 				center={center}
 				zoom={zoom}
 				scrollWheelZoom
 				whenCreated={setMap}
-			> */}
-			{/* <TileLayer
-					attribution='&copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-					url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${accessToken}`}
-				/> */}
-			{/* <TileLayer
-					attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-					url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-				/> */}
-
-			{/* <TileLayer
+			>
+				<TileLayer
 					attribution='<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 					url='https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=yLrkX2sfm5T5v5JXn69sU3DkgsDJSAafw7OCMYIIQVq4p0wdykcTUPjP55KJQqAM'
 				/>
 
 				<Marker icon={markerIcon} position={[latitude, longitude]}></Marker>
-			</MapContainer> */}
-
-			<MapBox
-				{...viewport}
-				accessToken='pk.eyJ1IjoibmlqYXQtaXNtYXlpbG92IiwiYSI6ImNrcDFxNWJ2cjBzeDEycG13MGNib2VrZHMifQ.9oTJT7rViSnwYyR0mGARvw'
-				onViewportChange={(viewport) => setViewport(viewport)}
-			></MapBox>
+			</MapContainer>
 
 			<button
 				style={{ position: "absolute" }}

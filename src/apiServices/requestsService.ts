@@ -35,10 +35,8 @@ export interface GetActionsParams {
 
 // services
 
-export const getRequests = (params: GetRequestsParams) => {
-	return axios.get("/easyappeal/v1/requests", {
-		params,
-	});
+export const getRequests = (params: GetRequestsParams, menuType: string) => {
+	return axios.get(`/easyappeal/v1/${menuType}s`, { params });
 };
 
 export const getRequest = (params: GetRequestParams) => {

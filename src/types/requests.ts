@@ -28,6 +28,29 @@ export interface Request {
 	textHistory?: RequestTextHistory[];
 }
 
+export interface Problem {
+	id: string;
+	title: string;
+	street: {
+		name: string;
+	};
+	dateStr: string;
+	address: string;
+	appealCount: number;
+	number: number;
+	executive?: {
+		name: string;
+	};
+	isViewed: boolean;
+	coverMedia: string;
+	appealDate: string;
+	priorityLevel: "CRITICAL" | "NORMAL" | "LOW";
+	region: {
+		name: string;
+	};
+	canBeJoined: boolean;
+}
+
 export interface RequestAddress {
 	formatted_address: string;
 	place_id: string;

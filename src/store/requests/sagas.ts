@@ -1,4 +1,4 @@
-import { takeLatest, call, put } from "redux-saga/effects";
+import { takeLatest, call, put, select } from "redux-saga/effects";
 import { ActionTypes, GetRequests, GetRequest } from "./types";
 import {
 	getRequestsSuccess,
@@ -7,15 +7,29 @@ import {
 	getRequestSuccess,
 	getRequestFailure,
 } from "./actions";
+import { selectActiveMenu } from "../user/selectors";
 import * as RequestsService from "apiServices/requestsService";
+import { Menu } from "types/common";
 
 // workers
 function* handleGetRequests(action: GetRequests) {
+	const activeMenu: Menu = yield select(selectActiveMenu);
+
 	try {
-		const res = yield call(RequestsService.getRequests, action.payload);
+		const res = yield call(
+			RequestsService.getRequests,
+			action.payload,
+			activeMenu.type.toLocaleLowerCase()
+		);
 		const { entities, totalCount } = res.data.data;
 
-		yield put(getRequestsSuccess(entities));
+		yield put(
+			getRequestsSuccess({
+				type: activeMenu.type,
+				requests: entities || [],
+				problems: entities || [],
+			})
+		);
 		yield put(setRequestsTotalCount(totalCount));
 	} catch (error) {
 		yield put(getRequestsFailure(error.message));

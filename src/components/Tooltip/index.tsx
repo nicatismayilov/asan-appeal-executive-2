@@ -1,11 +1,11 @@
-import { useState, ReactElement, useRef, useEffect } from "react";
+import { useState, ReactElement, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence, Transition } from "framer-motion";
 import { useRect } from "@reach/rect";
 import { useWindowSize } from "@reach/window-size";
 
 import { TooltipPosition } from "./types";
-import { computeStyles } from "./utils";
+import { computeStyles, computeVariants } from "./utils";
 import generateKey from "utils/generateKey";
 
 import "./styles.scss";
@@ -17,7 +17,7 @@ interface Props {
 	disabled?: boolean;
 }
 
-const variants: Variants = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
+const transition: Transition = { duration: 0.15 };
 
 const Tooltip: React.FC<Props> = (props) => {
 	const { position = "top", content, distance = 5, disabled = false } = props;
@@ -25,8 +25,15 @@ const Tooltip: React.FC<Props> = (props) => {
 	const tooltipWrapperRef = useRef<HTMLDivElement>(null);
 	const tooltipKey = useRef(generateKey());
 	const rect = useRect(tooltipWrapperRef, { observe: active });
-
 	const { width, height } = useWindowSize();
+
+	const styles = useMemo(() => {
+		return computeStyles(rect, position, distance);
+	}, [distance, position, rect]);
+
+	const variants = useMemo(() => {
+		return computeVariants(position);
+	}, [position]);
 
 	useEffect(() => {
 		tooltipKey.current = generateKey();
@@ -47,11 +54,13 @@ const Tooltip: React.FC<Props> = (props) => {
 					<AnimatePresence>
 						{active && (
 							<motion.div
-								initial='hidden'
-								animate='visible'
+								initial='initial'
+								animate='animate'
+								exit='initial'
 								variants={variants}
+								transition={transition}
 								className={`tooltip-slot tooltip-slot--${position}`}
-								style={computeStyles(rect, position, distance)}
+								style={styles}
 							>
 								{content}
 							</motion.div>

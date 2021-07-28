@@ -1,6 +1,6 @@
 import { GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
 import { Request } from "types/requests";
-import { ActionTypes, Action } from "./types";
+import { ActionTypes, Action, GetRequestsSuccessPayload } from "./types";
 
 export const getRequests = (params: GetRequestsParams): Action => {
 	return {
@@ -9,10 +9,10 @@ export const getRequests = (params: GetRequestsParams): Action => {
 	};
 };
 
-export const getRequestsSuccess = (requests: Request[]): Action => {
+export const getRequestsSuccess = (payload: GetRequestsSuccessPayload): Action => {
 	return {
 		type: ActionTypes.GET_REQUESTS_SUCCESS,
-		payload: requests,
+		payload,
 	};
 };
 

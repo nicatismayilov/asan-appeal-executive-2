@@ -4,7 +4,15 @@ import { RequestsReducerState } from "./types";
 
 const selectRequestsReducer = (store: StoreState): RequestsReducerState => store.requestsReducer;
 
-export const selectRequests = createSelector([selectRequestsReducer], (reducer) => reducer.requets);
+export const selectRequests = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.requests
+);
+
+export const selectProblems = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.problems
+);
 
 export const selectRequestsTotalCount = createSelector(
 	[selectRequestsReducer],

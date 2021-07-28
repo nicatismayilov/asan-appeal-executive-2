@@ -8,7 +8,7 @@ import { getAccessToken } from "utils/sessionStorage";
 import { getCookie } from "utils/cookies";
 import generateKey from "utils/generateKey";
 
-const isDev = origin === "http://mreg.asan.org" || process.env.NODE_ENV === "development";
+// const isDev = origin === "http://mreg.asan.org" || process.env.NODE_ENV === "development";
 
 const axiosInstance = axios.create({
 	// baseURL: isDev ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL,

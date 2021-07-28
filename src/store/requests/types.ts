@@ -1,9 +1,10 @@
-import { Request } from "types/requests";
+import { Problem, Request } from "types/requests";
 import { GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
 
 // requests reducer interface
 export interface RequestsReducerState {
-	requets: Request[];
+	requests: Request[];
+	problems: Problem[];
 	requestsLoading: boolean;
 	error: string;
 	totalCount: number;
@@ -24,6 +25,12 @@ export enum ActionTypes {
 	GET_REQUEST_FAILURE = "GET_REQUEST_FAILURE",
 }
 
+export interface GetRequestsSuccessPayload {
+	type: "REQUEST" | "PROBLEM";
+	requests: Request[];
+	problems: Problem[];
+}
+
 // action interfaces
 export interface GetRequests {
 	type: typeof ActionTypes.GET_REQUESTS;
@@ -32,7 +39,7 @@ export interface GetRequests {
 
 export interface GetRequestsSuccess {
 	type: typeof ActionTypes.GET_REQUESTS_SUCCESS;
-	payload: Request[];
+	payload: GetRequestsSuccessPayload;
 }
 
 export interface GetRequestsFailure {

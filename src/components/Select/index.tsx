@@ -13,7 +13,7 @@ import classnames from "classnames";
 import { AnimatePresence, motion, Transition } from "framer-motion";
 import { useRect } from "@reach/rect";
 import { useWindowSize } from "@reach/window-size";
-import Scrollbars from "react-custom-scrollbars";
+import Scrollbars from "react-custom-scrollbars-2";
 
 import useClickOutside from "hooks/useClickOutside";
 
@@ -21,6 +21,7 @@ import ScrollBar from "components/Scrollbar";
 
 import escapeRegExp from "./utils/escapeRegExp";
 import generateKey from "utils/generateKey";
+import isZero from "utils/isZero";
 
 import { ReactComponent as ArrowDown } from "./assets/arrow-down.svg";
 import { ReactComponent as ResetIcon } from "./assets/reset.svg";
@@ -134,7 +135,7 @@ function Select<T>(props: Props<T>): React.ReactElement | null {
 		(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 			const option = JSON.parse(e.currentTarget.dataset["option"] || "");
 
-			if (option) {
+			if (option || option === 0) {
 				onChange(option);
 				setOptionsVisible(false);
 			}
@@ -251,7 +252,7 @@ function Select<T>(props: Props<T>): React.ReactElement | null {
 						placeholder=' '
 					/>
 
-					{(value && render(value)) || <>&nbsp;</>}
+					{((value || (typeof value === "number" && value === 0)) && render(value)) || <>&nbsp;</>}
 
 					{value && clearable && !loading ? (
 						<button
@@ -290,6 +291,11 @@ function Select<T>(props: Props<T>): React.ReactElement | null {
 										) : (
 											options.map((option) => {
 												const id = idFromValue(option);
+												const isSearched = id === (searchedOption && idFromValue(searchedOption));
+												const isSelected =
+													typeof value !== "undefined" &&
+													(value || isZero(value)) &&
+													id === idFromValue(value);
 
 												return (
 													<div
@@ -297,9 +303,8 @@ function Select<T>(props: Props<T>): React.ReactElement | null {
 														ref={optionsRefMap[id]}
 														className={classnames({
 															"select-option": true,
-															"select-option--searched":
-																id === (searchedOption && idFromValue(searchedOption)),
-															"select-option--selected": value && id === idFromValue(value),
+															"select-option--searched": isSearched,
+															"select-option--selected": isSelected,
 														})}
 														data-option={JSON.stringify(option)}
 														onClick={handleSelect}

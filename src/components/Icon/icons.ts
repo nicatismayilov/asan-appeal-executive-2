@@ -29,6 +29,16 @@ import { ReactComponent as doubleUp } from "./svg/double-up.svg";
 import { ReactComponent as doubleDown } from "./svg/double-down.svg";
 import { ReactComponent as expand } from "./svg/expand.svg";
 import { ReactComponent as compress } from "./svg/compress.svg";
+import { ReactComponent as customerSupport } from "./svg/customer-support.svg";
+import { ReactComponent as timetable } from "./svg/timetable.svg";
+import { ReactComponent as addProperty } from "./svg/add-property.svg";
+import { ReactComponent as sortDown } from "./svg/sort-down.svg";
+import { ReactComponent as sortUp } from "./svg/sort-up.svg";
+import { ReactComponent as emptyBox } from "./svg/empty-box.svg";
+import { ReactComponent as arrow } from "./svg/arrow.svg";
+import { ReactComponent as right } from "./svg/right.svg";
+import { ReactComponent as left } from "./svg/left.svg";
+import { ReactComponent as sort } from "./svg/sort.svg";
 
 const icons: { [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>> } = {
 	setting,
@@ -62,6 +72,16 @@ const icons: { [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGEleme
 	"double-down": doubleDown,
 	expand,
 	compress,
+	"customer-support": customerSupport,
+	timetable,
+	"add-property": addProperty,
+	"sort-down": sortDown,
+	"sort-up": sortUp,
+	"empty-box": emptyBox,
+	arrow,
+	right,
+	left,
+	sort,
 };
 
 export default icons;

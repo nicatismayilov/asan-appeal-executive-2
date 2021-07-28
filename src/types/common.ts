@@ -6,8 +6,6 @@ export interface Menu {
 	name: string;
 	showInNewTab: boolean;
 	title: string;
-	type: AppealType;
+	type: "REQUEST" | "PROBLEM";
 	url: string;
 }
-
-export type AppealType = "REQUEST" | "PROBLEM";

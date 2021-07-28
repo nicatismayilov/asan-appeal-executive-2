@@ -2,7 +2,8 @@ import { createDefaultRequest } from "types/utils";
 import { ActionTypes, Action, RequestsReducerState } from "./types";
 
 const initialState: RequestsReducerState = {
-	requets: [],
+	requests: [],
+	problems: [],
 	requestsLoading: false,
 	error: "",
 	totalCount: 0,
@@ -18,12 +19,20 @@ const reducer = (state = initialState, action: Action): RequestsReducerState => 
 				requestsLoading: true,
 			};
 
-		case ActionTypes.GET_REQUESTS_SUCCESS:
-			return {
-				...state,
-				requestsLoading: false,
-				requets: action.payload,
-			};
+		case ActionTypes.GET_REQUESTS_SUCCESS: {
+			if (action.payload.type === "REQUEST")
+				return {
+					...state,
+					requestsLoading: false,
+					requests: action.payload.requests,
+				};
+			else
+				return {
+					...state,
+					requestsLoading: false,
+					problems: action.payload.problems,
+				};
+		}
 
 		case ActionTypes.GET_REQUESTS_FAILURE:
 			return {
