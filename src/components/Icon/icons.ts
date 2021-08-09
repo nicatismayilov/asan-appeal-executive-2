@@ -39,6 +39,20 @@ import { ReactComponent as arrow } from "./svg/arrow.svg";
 import { ReactComponent as right } from "./svg/right.svg";
 import { ReactComponent as left } from "./svg/left.svg";
 import { ReactComponent as sort } from "./svg/sort.svg";
+import { ReactComponent as filter } from "./svg/filter.svg";
+import { ReactComponent as search } from "./svg/search.svg";
+import { ReactComponent as clearSearch } from "./svg/clear-search.svg";
+import { ReactComponent as erase } from "./svg/erase.svg";
+import { ReactComponent as broom } from "./svg/broom.svg";
+import { ReactComponent as connectionStatusOn } from "./svg/connection-status-on.svg";
+import { ReactComponent as calendar } from "./svg/calendar.svg";
+import { ReactComponent as clock } from "./svg/clock.svg";
+import { ReactComponent as chevronRight } from "./svg/chevron-right.svg";
+import { ReactComponent as chevronLeft } from "./svg/chevron-left.svg";
+import { ReactComponent as check } from "./svg/check.svg";
+import { ReactComponent as horizontalLine } from "./svg/horizontal-line.svg";
+import { ReactComponent as chevronUp } from "./svg/chevron-up.svg";
+import { ReactComponent as chevronDown } from "./svg/chevron-down.svg";
 
 const icons: { [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>> } = {
 	setting,
@@ -82,6 +96,20 @@ const icons: { [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGEleme
 	right,
 	left,
 	sort,
+	filter,
+	search,
+	"clear-search": clearSearch,
+	erase,
+	broom,
+	"connection-status-on": connectionStatusOn,
+	calendar,
+	clock,
+	"chevron-right": chevronRight,
+	"chevron-left": chevronLeft,
+	check,
+	"horizontal-line": horizontalLine,
+	"chevron-up": chevronUp,
+	"chevron-down": chevronDown,
 };
 
 export default icons;

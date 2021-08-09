@@ -146,7 +146,7 @@
       & > svg {
         height: 50%;
         width: 50%;
-        fill: #fff;
+        fill: var(--combobox-label-color);
       }
     }
 

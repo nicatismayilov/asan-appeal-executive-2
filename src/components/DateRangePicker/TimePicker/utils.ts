@@ -1,19 +1,136 @@
-import { getHours, getMinutes, getSeconds } from "date-fns";
+import { getHours, getMinutes, getSeconds, isSameDay, isSameHour, isSameMinute } from "date-fns";
 
-export const isHourDisabled = (h: number, minDate?: Date, maxDate?: Date) => {
-	if (minDate && maxDate) return h <= getHours(minDate) || h >= getHours(maxDate);
-	else if (minDate) return h <= getHours(minDate);
-	else if (maxDate) return h >= getHours(maxDate);
+interface Args {
+	value: number;
+	date?: Date;
+	minDate?: Date;
+	maxDate?: Date;
+}
+
+export const isHourDisabled = (args: Args) => {
+	const { value, date, minDate, maxDate } = args;
+
+	if (minDate && maxDate && date) {
+		if (isSameDay(minDate, maxDate)) {
+			return value < getHours(minDate) || value > getHours(maxDate);
+		}
+
+		if (isSameDay(minDate, date)) {
+			return value < getHours(minDate);
+		}
+		if (isSameDay(maxDate, date)) {
+			return value > getHours(maxDate);
+		}
+		return false;
+	}
+
+	if (minDate && date) {
+		return isSameDay(minDate, date) && value < getHours(minDate);
+	}
+
+	if (maxDate && date) {
+		return isSameDay(maxDate, date) && value > getHours(maxDate);
+	}
+
+	return false;
 };
 
-export const isMinuteDisabled = (m: number, minDate?: Date, maxDate?: Date) => {
-	if (minDate && maxDate) return m <= getMinutes(minDate) || m >= getMinutes(maxDate);
-	else if (minDate) return m <= getMinutes(minDate);
-	else if (maxDate) return m >= getMinutes(maxDate);
+export const isMinuteDisabled = (args: Args) => {
+	const { value, date, minDate, maxDate } = args;
+
+	if (minDate && maxDate && date) {
+		if (isSameDay(minDate, maxDate)) {
+			if (isSameHour(minDate, maxDate)) {
+				return value < getMinutes(minDate) || value > getMinutes(maxDate);
+			}
+
+			if (isSameHour(minDate, date)) {
+				return value < getMinutes(minDate);
+			}
+
+			if (isSameHour(maxDate, date)) {
+				return value > getMinutes(maxDate);
+			}
+
+			return false;
+		}
+
+		if (isSameDay(minDate, date) && isSameHour(minDate, date)) {
+			return value < getMinutes(minDate);
+		}
+
+		if (isSameDay(maxDate, date) && isSameHour(maxDate, date)) {
+			return value > getMinutes(maxDate);
+		}
+
+		return false;
+	}
+
+	if (minDate && date) {
+		if (isSameDay(minDate, date) && isSameHour(minDate, date)) {
+			return value < getMinutes(minDate);
+		}
+
+		return false;
+	}
+
+	if (maxDate && date) {
+		if (isSameDay(maxDate, date) && isSameHour(maxDate, date)) {
+			return value > getMinutes(maxDate);
+		}
+
+		return false;
+	}
+
+	return false;
 };
 
-export const isSecondDisabled = (s: number, minDate?: Date, maxDate?: Date) => {
-	if (minDate && maxDate) return s <= getSeconds(minDate) || s >= getSeconds(maxDate);
-	else if (minDate) return s <= getSeconds(minDate);
-	else if (maxDate) return s >= getSeconds(maxDate);
+export const isSecondDisabled = (args: Args) => {
+	const { value, date, minDate, maxDate } = args;
+
+	if (minDate && maxDate && date) {
+		if (isSameDay(minDate, maxDate)) {
+			if (isSameHour(minDate, maxDate) && isSameMinute(minDate, maxDate)) {
+				return value < getSeconds(minDate) || value > getSeconds(maxDate);
+			}
+
+			if (isSameHour(minDate, date) && isSameMinute(minDate, date)) {
+				return value < getSeconds(minDate);
+			}
+
+			if (isSameHour(maxDate, date) && isSameMinute(maxDate, date)) {
+				return value > getSeconds(maxDate);
+			}
+
+			return false;
+		}
+
+		if (isSameDay(minDate, date) && isSameHour(minDate, date) && isSameMinute(minDate, date)) {
+			return value < getSeconds(minDate);
+		}
+
+		if (isSameDay(maxDate, date) && isSameHour(maxDate, date) && isSameMinute(maxDate, date)) {
+			return value > getSeconds(maxDate);
+		}
+
+		return false;
+	}
+
+	if (minDate && date) {
+		if (isSameDay(minDate, date) && isSameHour(minDate, date) && isSameMinute(minDate, date)) {
+			return value < getSeconds(minDate);
+		}
+
+		return false;
+	}
+
+	if (maxDate && date) {
+		if (isSameDay(maxDate, date) && isSameHour(maxDate, date) && isSameMinute(maxDate, date)) {
+			return value > getSeconds(maxDate);
+		}
+
+		return false;
+	}
+
+	return false;
 };

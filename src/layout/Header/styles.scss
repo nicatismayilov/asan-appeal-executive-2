@@ -53,7 +53,7 @@
 
 .user-info {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   cursor: pointer;
   transition: all 150ms;
   border-radius: 8px;
@@ -67,8 +67,8 @@
 
 .user-img {
   &-wrapper {
-    height: 28px;
-    width: 28px;
+    height: 36px;
+    width: 36px;
     overflow: hidden;
     border-radius: 50%;
     display: flex;
@@ -88,13 +88,18 @@
 }
 
 .user-fullname {
-  width: 100px;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 15px;
   font-weight: 500;
   color: var(--header-user-fullname-color);
+  display: flex;
+  flex-direction: column;
+
+  & > span {
+    margin-top: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4759e4;
+  }
 }
 
 .header-menu {

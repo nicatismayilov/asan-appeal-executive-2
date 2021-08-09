@@ -1,8 +1,10 @@
 import { format } from "date-fns";
 import { az } from "date-fns/esm/locale";
 
-import { ReactComponent as RightIcon } from "../assets/chevron-right.svg";
-import { ReactComponent as DoubleLeftIcon } from "../assets/chevron-double-left.svg";
+import Icon from "components/Icon";
+
+// import { ReactComponent as RightIcon } from "../assets/chevron-right.svg";
+// import { ReactComponent as DoubleLeftIcon } from "../assets/chevron-double-left.svg";
 
 interface Props {
 	onSetPrevoiusYear?: () => void;
@@ -41,18 +43,20 @@ const CalendarTitle: React.FC<Props> = (props) => {
 						role='button'
 						aria-label='Previous year'
 					>
-						<DoubleLeftIcon />
+						{/* <DoubleLeftIcon /> */}
+						<Icon icon='double-left' />
 					</div>
 
 					<div
-						className='datepicker-calendar-title-icon datepicker-calendar-title-icon--rotate'
+						className='datepicker-calendar-title-icon'
 						tabIndex={0}
 						onClick={onSetPreviousMonth}
 						onKeyPress={(e) => handleKeyPressHeaderIcon(e, onSetPreviousMonth)}
 						role='button'
 						aria-label='Previous month'
 					>
-						<RightIcon />
+						{/* <RightIcon /> */}
+						<Icon icon='chevron-left' />
 					</div>
 				</div>
 			) : (
@@ -73,18 +77,20 @@ const CalendarTitle: React.FC<Props> = (props) => {
 						role='button'
 						aria-label='Next year'
 					>
-						<RightIcon />
+						{/* <RightIcon /> */}
+						<Icon icon='chevron-right' />
 					</div>
 
 					<div
-						className='datepicker-calendar-title-icon datepicker-calendar-title-icon--rotate'
+						className='datepicker-calendar-title-icon'
 						tabIndex={0}
 						onClick={onSetNextYear}
 						onKeyPress={(e) => handleKeyPressHeaderIcon(e, onSetNextYear)}
 						role='button'
 						aria-label='Next year'
 					>
-						<DoubleLeftIcon />
+						{/* <DoubleLeftIcon /> */}
+						<Icon icon='double-right' />
 					</div>
 				</div>
 			) : (

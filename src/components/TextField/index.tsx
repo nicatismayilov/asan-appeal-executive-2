@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import useMeasure from "react-use-measure";
 import classnames from "classnames";
 

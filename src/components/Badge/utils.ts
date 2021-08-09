@@ -2,10 +2,18 @@ import { CSSProperties } from "react";
 
 type BadgeRect = DOMRect | null;
 
-export const computeStyles = (rect: BadgeRect): CSSProperties => {
+interface IArguments {
+	rect: BadgeRect;
+	distanceX: number;
+	distanceY: number;
+}
+
+export function computeStyles(args: IArguments): CSSProperties {
+	const { rect, distanceX, distanceY } = args;
+
 	if (rect) {
 		const { x, y, width } = rect;
 
-		return { bottom: window.innerHeight - y, left: x + width };
+		return { bottom: window.innerHeight - y - distanceY, left: x + width - distanceX };
 	} else return {};
-};
+}

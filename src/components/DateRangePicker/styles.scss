@@ -35,14 +35,10 @@
 }
 
 .datepicker {
-  display: flex;
-  flex-direction: column;
   cursor: pointer;
   position: relative;
-  width: max-content;
-  height: fit-content;
   width: 100%;
-  // z-index: 1000;
+  max-width: 100%;
 
   *,
   & {
@@ -73,16 +69,15 @@
 
   &-selection {
     border-radius: 6px;
-    padding: 6px 30px;
+    padding: 7.5px 10px;
+    padding-right: calc(20px + 10px);
     background-color: var(--date-range-picker-bg-color);
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
     border: 2px solid var(--date-range-picker-bg-color);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     color: var(--date-range-picker-text-color);
-    min-width: max-content;
-    height: calc(19px + 12px + 4px);
     position: relative;
 
     &--focus {
@@ -106,10 +101,9 @@
     }
 
     &-delimiter {
-      width: 20px;
       text-align: center;
       font-weight: 400;
-      margin: 0 10px;
+      margin: 0 5px;
     }
   }
 
@@ -139,7 +133,7 @@
     & > svg {
       height: 50%;
       width: 50%;
-      fill: #fff;
+      fill: var(--date-range-picker-label-color);
     }
   }
 
@@ -182,14 +176,6 @@
           transform: scale(0.9);
         }
 
-        &--rotate {
-          transform: rotateY(180deg);
-
-          &:active {
-            transform: rotateY(180deg) scale(0.9);
-          }
-        }
-
         & > svg {
           height: 65%;
           width: 65%;
@@ -213,6 +199,7 @@
     border-radius: 4px;
     padding: 2px 6px;
     transition: all 50ms;
+    cursor: pointer;
 
     &:not(:last-of-type) {
       margin-right: 6px;

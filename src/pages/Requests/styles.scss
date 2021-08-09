@@ -1,0 +1,41 @@
+.light {
+  --table-date-tag-bg-color: #e4e6eb;
+}
+
+.dark {
+  --table-date-tag-bg-color: #3a3b3c;
+}
+
+.table-date-tag {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
+  padding: 2px 8px;
+  padding-right: 2px;
+  background-color: var(--table-date-tag-bg-color);
+  font-weight: 500;
+  font-size: 14px;
+
+  &:first-of-type {
+    margin-bottom: 4px;
+  }
+
+  &-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: #ffffffb9;
+    margin-left: 6px;
+
+    & > svg {
+      width: 16px;
+      height: 16px;
+      fill: #4759e4;
+    }
+  }
+}

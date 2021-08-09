@@ -5,7 +5,6 @@ import classnames from "classnames";
 import TablePagination, { RefObject as TablePaginationRef } from "./components/TablePagination";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
-import Tooltip from "components/Tooltip";
 
 import { TableColumn } from "./types";
 
@@ -70,7 +69,7 @@ const Table = <T extends object>(props: Props<T>) => {
 			initialState: { pageIndex: defaultPageIndex, pageSize: defaultPageSize },
 			defaultColumn,
 			autoResetSortBy: false,
-			defaultCanSort: data.length > 0,
+			disableSortBy: data.length === 0,
 		},
 		useSortBy,
 		usePagination
@@ -92,8 +91,6 @@ const Table = <T extends object>(props: Props<T>) => {
 		gotoPage,
 	} = tableInstance;
 	const { pageIndex, pageSize, sortBy } = state;
-
-	useEffect((): void => console.log(sortBy), [sortBy]);
 
 	const handlePageChange = useCallback(
 		(page: number) => {
@@ -161,26 +158,22 @@ const Table = <T extends object>(props: Props<T>) => {
 									>
 										{column.canSort ? (
 											<div className='w-100 d-flex justify-center'>
-												<Tooltip disabled={!column.canSort} content='Sortlaşdır'>
-													<div className='pr-12'>{column.render("Header")}</div>
+												<div className='pr-12'>{column.render("Header")}</div>
 
-													<div className='table-th-sort'>
-														<Icon
-															icon='sort-up'
-															style={{
-																fill:
-																	column.isSorted && !column.isSortedDesc ? "#4759e4" : undefined,
-															}}
-														/>
-														<Icon
-															icon='sort-down'
-															style={{
-																fill:
-																	column.isSorted && column.isSortedDesc ? "#4759e4" : undefined,
-															}}
-														/>
-													</div>
-												</Tooltip>
+												<div className='table-th-sorter'>
+													<Icon
+														icon='sort-up'
+														style={{
+															fill: column.isSorted && !column.isSortedDesc ? "#4759e4" : undefined,
+														}}
+													/>
+													<Icon
+														icon='sort-down'
+														style={{
+															fill: column.isSorted && column.isSortedDesc ? "#4759e4" : undefined,
+														}}
+													/>
+												</div>
 											</div>
 										) : (
 											column.render("Header")

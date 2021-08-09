@@ -31,6 +31,8 @@ import Calendar from "./Calendar";
 import CalendarTitle from "./CalendarTitle";
 import TimePicker, { Time } from "./TimePicker";
 
+import { computeStyles } from "./utils";
+
 import { ReactComponent as ResetIcon } from "./assets/reset.svg";
 import "./styles.scss";
 
@@ -66,15 +68,16 @@ const DateRangePicker: React.FC<Props> = (props) => {
 	const { onDateSelect } = props;
 	const [calendarVisible, setCalendarVisible] = useState(false);
 	const [startDate, setStartDate] = useState(new Date());
-	const [calendarWrapperY, setCalendarWrapperY] = useState("top");
+	const [calendarWrapperY] = useState<"top" | "bottom">("top");
+	const [calendarX, setCalendarX] = useState<"right" | "left">("left");
 	const dateRangePickerRef = useRef<HTMLDivElement>(null);
 	const datePickerSelectionRef = useRef<HTMLDivElement>(null);
 	const calendarWrapperRef = useRef<HTMLDivElement>(null);
 	const dateRangePickerResetBtnRef = useRef<HTMLButtonElement>(null);
-	const { height: windowHeight } = useWindowSize();
+	const { height: windowHeight, width: windowWidth } = useWindowSize();
 	const dateRangePickerRect = useRect(dateRangePickerRef, { observe: calendarVisible });
 	const calendarWrapperRect = useRect(calendarWrapperRef, { observe: calendarVisible });
-	const displayFormat = showTime ? "dd MMM yyyy, HH:mm:ss" : "dd MMM yyyy";
+	const displayFormat = showTime ? "dd/MM/yyyy, HH:mm" : "dd/MM/yyyy";
 
 	useClickOutside({
 		ref: [calendarWrapperRef, datePickerSelectionRef, dateRangePickerResetBtnRef],
@@ -93,24 +96,16 @@ const DateRangePicker: React.FC<Props> = (props) => {
 	}, [selectedDate]);
 
 	const datePickerCalendarStyles = useMemo<React.CSSProperties>(() => {
-		if (dateRangePickerRect) {
-			const topPos = dateRangePickerRect.bottom + 4;
-			const bottomPos = windowHeight - (dateRangePickerRect.y - 4);
+		const styles = computeStyles({
+			rect: dateRangePickerRect,
+			x: calendarX,
+			y: calendarWrapperY,
+			windowHeight,
+			windowWidth,
+		});
 
-			return {
-				left: dateRangePickerRect.x,
-				top: calendarWrapperY === "top" ? topPos : undefined,
-				bottom: calendarWrapperY === "bottom" ? bottomPos : undefined,
-				transformOrigin: calendarWrapperY === "top" ? "center top" : "center bottom",
-			};
-		} else
-			return {
-				left: 0,
-				top: calendarWrapperY === "top" ? "calc(100% + 4px)" : undefined,
-				bottom: calendarWrapperY === "bottom" ? "calc(100% + 4px)" : undefined,
-				transformOrigin: calendarWrapperY === "top" ? "center top" : "center bottom",
-			};
-	}, [dateRangePickerRect, calendarWrapperY, windowHeight]);
+		return styles;
+	}, [dateRangePickerRect, calendarX, calendarWrapperY, windowHeight, windowWidth]);
 
 	const calendarStyle = useMemo<React.CSSProperties>(() => {
 		return { borderRadius: 0, boxShadow: "none" };
@@ -166,7 +161,7 @@ const DateRangePicker: React.FC<Props> = (props) => {
 		[dateRange, maxDate, minDate, onDateSelect]
 	);
 
-	const handleTimePick = useCallback(
+	const handleTimeSelect = useCallback(
 		(time: Time, type: "start" | "end") => {
 			if (type === "start" && dateRange.length !== 0) {
 				let newStartDate = dateRange[0];
@@ -243,11 +238,16 @@ const DateRangePicker: React.FC<Props> = (props) => {
 
 	useEffect(() => {
 		if (calendarVisible && calendarWrapperRect) {
-			if (calendarWrapperRect.height + calendarWrapperRect.y > windowHeight)
-				setCalendarWrapperY("bottom");
+			if (calendarWrapperRect.height + calendarWrapperRect.y > windowHeight) {
+			}
+
+			if (calendarWrapperRect.width + calendarWrapperRect.x > windowWidth) {
+				setCalendarX("right");
+			}
+			// setCalendarWrapperY("bottom");
 			// else if () setCalendarWrapperY("top");
 		}
-	}, [calendarVisible, calendarWrapperRect, windowHeight]);
+	}, [calendarVisible, calendarWrapperRect, windowHeight, windowWidth]);
 
 	useEffect(() => {
 		if (!calendarVisible) {
@@ -263,7 +263,7 @@ const DateRangePicker: React.FC<Props> = (props) => {
 			aria-label='Datepicker'
 			onKeyPress={handleKeyPress}
 		>
-			{label && <div className='datepicker-label'>{label}</div>}
+			{label && <span className='datepicker-label'>{label}</span>}
 
 			<div
 				ref={datePickerSelectionRef}
@@ -282,10 +282,10 @@ const DateRangePicker: React.FC<Props> = (props) => {
 						"datepicker-selection-slot--empty": !dateRange[0],
 					})}
 				>
-					{dateRange[0] ? format(dateRange[0], displayFormat, { locale: az }) : "Başlanğıc tarixi"}
+					{dateRange[0] ? format(dateRange[0], displayFormat, { locale: az }) : <>&nbsp;</>}
 				</div>
 
-				<div className='datepicker-selection-delimiter'>—</div>
+				{dateRange[0] && <div className='datepicker-selection-delimiter'>-</div>}
 
 				<div
 					className={classnames({
@@ -293,7 +293,7 @@ const DateRangePicker: React.FC<Props> = (props) => {
 						"datepicker-selection-slot--empty": !dateRange[1],
 					})}
 				>
-					{dateRange[1] ? format(dateRange[1], displayFormat, { locale: az }) : "Bitmə tarixi"}
+					{dateRange[1] ? format(dateRange[1], displayFormat, { locale: az }) : <>&nbsp;</>}
 				</div>
 
 				{selectedDate.length !== 0 && (
@@ -366,7 +366,7 @@ const DateRangePicker: React.FC<Props> = (props) => {
 								{showTime && (
 									<TimePicker
 										range={dateRange}
-										onTimePick={handleTimePick}
+										onTimePick={handleTimeSelect}
 										minDate={minDate}
 										maxDate={maxDate}
 									/>

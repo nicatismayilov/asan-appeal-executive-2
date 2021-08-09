@@ -47,6 +47,10 @@
     border-bottom: 1px solid var(--time-picker-cell-not-current-color);
   }
 
+  &-display-area {
+    min-width: 75px;
+  }
+
   &-slot {
     border-radius: 6px;
     padding: 6px 10px;
@@ -54,7 +58,7 @@
     font-size: 16px;
     font-weight: 500;
     color: var(--time-picker-text-color);
-    min-width: 82px;
+    min-width: 60px;
     min-height: 33px;
   }
 

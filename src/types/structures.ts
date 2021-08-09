@@ -1,17 +1,17 @@
-export interface Organization {
+export interface Structure {
 	id: number;
 	name: string;
 	address: string;
 	email?: string;
 	phoneNumber?: string;
 	region: Region;
-	type: OrganizationType;
+	type: StructureType;
 	webSite?: string;
 	voen?: string;
 	askForRedirection?: boolean;
-	parent?: Organization;
-	relatedMinistry?: Organization;
-	subCompanies?: Organization[];
+	parent?: Structure;
+	relatedMinistry?: Structure;
+	subStructures?: Structure[];
 }
 
 export interface Region {
@@ -20,7 +20,7 @@ export interface Region {
 	parent?: Region;
 }
 
-export type OrganizationLabel =
+export type StructureLabel =
 	| "REPRESENTATION"
 	| "OFFICE"
 	| "EXECUTIVE"
@@ -30,8 +30,8 @@ export type OrganizationLabel =
 	| "ADMINISTRATION"
 	| "";
 
-export interface OrganizationType {
+export interface StructureType {
 	id: number;
 	name: string;
-	label: OrganizationLabel;
+	label: StructureLabel;
 }

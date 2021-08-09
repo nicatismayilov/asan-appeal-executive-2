@@ -1,9 +1,27 @@
 import { Employee } from "types/employee";
-import { Organization, Region, OrganizationType } from "types/organization";
-import { Role, Step } from "types/user";
+import { Structure, Region, StructureType } from "types/structures";
+import { Role, Step, User } from "types/user";
 import { Menu } from "types/common";
-import { Request, RequestAddress, RequestFile, RequestTextHistory } from "./requests";
-import { Customer } from "./customer";
+import { Priority, Request, RequestAddress, RequestFile, RequestTextHistory } from "./requests";
+
+export function createDefaultUser(): User {
+	return {
+		uuid: "",
+		photo: "",
+		pin: "",
+		firstName: "",
+		lastName: "",
+		fatherName: "",
+		birthdayStr: "",
+		gender: false,
+		role: createDefaultRole(),
+		address: "",
+		steps: [],
+		structure: createDefaultStructure(),
+		taskCount: 0,
+		mobilePhoneNumber: "",
+	};
+}
 
 export function createDefaultRole(): Role {
 	return {
@@ -24,6 +42,23 @@ export function createDefaultStep(): Step {
 		id: -1,
 		name: "",
 		label: "",
+		defaultPath: "",
+		selectExecutor: false,
+		fileAnswer: false,
+		showPartialList: false,
+		uncheckOffice: false,
+		showNotificationBar: false,
+		canSearchByExecutive: false,
+		canSearchByRepresentation: false,
+		canSearchByParentOffice: false,
+		canSearchBySuboffice: false,
+		canSeeOperations: false,
+		canIdentifyStreet: false,
+		canUpdateProblemInfo: false,
+		canAddNewRequest: false,
+		canAssest: false,
+		canSearchByCategory: false,
+		canSearchByVerifiedDate: false,
 	};
 }
 
@@ -34,7 +69,7 @@ export function createDefaultRegion(): Region {
 	};
 }
 
-export function createDefaultOrganizationType(): OrganizationType {
+export function createDefaultStructureType(): StructureType {
 	return {
 		id: -1,
 		name: "",
@@ -42,13 +77,13 @@ export function createDefaultOrganizationType(): OrganizationType {
 	};
 }
 
-export function createDefaultOrganization(): Organization {
+export function createDefaultStructure(): Structure {
 	return {
 		id: -1,
 		name: "",
 		address: "",
 		region: createDefaultRegion(),
-		type: createDefaultOrganizationType(),
+		type: createDefaultStructureType(),
 		askForRedirection: false,
 	};
 }
@@ -62,7 +97,7 @@ export function createDefaultEmployee(): Employee {
 		fatherName: "",
 		email: "",
 		address: "",
-		company: createDefaultOrganization(),
+		structure: createDefaultStructure(),
 		steps: [],
 		role: createDefaultRole(),
 		photo: "",
@@ -149,14 +184,14 @@ export function createDefaultRequestTextHistory(): RequestTextHistory {
 	};
 }
 
-export function createDefaultCustomer(): Customer {
-	return {
-		firstName: "",
-		lastName: "",
-		fatherName: "",
-		uuid: "",
-		isWorker: false,
-		docSeriesNumber: "",
-		pin: "",
-	};
-}
+export const priorities: Priority[] = [
+	{ name: "LOW", title: "Aşağı", color: "#34c759" },
+	{ name: "NORMAL", title: "Normal", color: "#ffcc00" },
+	{ name: "CRITICAL", title: "Kritik", color: "#ff3b30" },
+];
+
+export const prioritiesMap: { [name: string]: Priority } = {
+	LOW: { name: "LOW", title: "Aşağı", color: "#34c759" },
+	NORMAL: { name: "NORMAL", title: "Normal", color: "#ffcc00" },
+	CRITICAL: { name: "CRITICAL", title: "Kritik", color: "#ff3b30" },
+};

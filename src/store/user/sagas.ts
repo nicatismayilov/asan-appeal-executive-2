@@ -1,48 +1,44 @@
-import { takeLatest, call, put } from "redux-saga/effects";
-
-import * as UserService from "apiServices/userService";
-import * as CommonService from "apiServices/commonService";
+import { takeLatest, call, put, select } from "redux-saga/effects";
 import { ActionTypes, SetActiveStep } from "./types";
-import { UserInformation } from "types/user";
 import {
-	fetchUserSuccess,
-	fetchUserFailure,
+	getUser,
+	getUserSuccess,
+	getUserFailure,
 	setActiveStep,
-	fetchMenus,
-	fetchMenuCounts,
-	fetchMenusSuccess,
-	fetchMenusFailure,
-	fetchMenuCountsSuccess,
-	fetchMenuCountsFailure,
+	getMenus,
+	getMenuCounts,
+	getMenusSuccess,
+	getMenusFailure,
+	getMenuCountsSuccess,
+	getMenuCountsFailure,
 	setActiveMenu,
 } from "./actions";
-
-import EventBus from "eventBus";
+import { selectIsAuthenticated } from "../auth/selectors";
+import { selectUser } from "./selectors";
+import UserService from "apiServices/userService";
+import CommonService from "apiServices/commonService";
+import EventBus, { MenusLoad } from "eventBus";
+import { User } from "types/user";
 
 // workers
-function* handleFetchUser() {
+function* handleCheckUserSession() {
+	const isAuth: boolean = yield select(selectIsAuthenticated);
+	const user: User = yield select(selectUser);
+
+	if (isAuth && user.uuid && user.pin) return;
+
+	yield put(getUser());
+}
+
+function* handleGetUser() {
 	try {
-		const res = yield call(UserService.loadDetails);
-		const info = res.data.data;
+		const res = yield call(UserService.getUserData);
+		const user = res.data.data;
 
-		const user: UserInformation = {
-			image: info.photo,
-			pin: info.pin,
-			name: info.firstName,
-			surname: info.lastName,
-			father: info.fatherName,
-			birthDate: info.birthdayStr,
-			gender: info.gender ? "Qadın" : "Kişi",
-			role: info.role,
-			address: info.address || "",
-			steps: info.steps,
-			company: info.company,
-		};
-
-		yield put(fetchUserSuccess(user));
+		yield put(getUserSuccess(user));
 		yield put(setActiveStep(user.steps[0]));
 	} catch (error) {
-		yield put(fetchUserFailure(error.message));
+		yield put(getUserFailure(error.message));
 	}
 }
 
@@ -50,60 +46,65 @@ function* handleSetActiveStep(action: SetActiveStep) {
 	const { payload } = action;
 
 	if (payload.id !== -1 && payload.id !== 9999) {
-		yield put(fetchMenus());
-		yield put(fetchMenuCounts());
+		yield put(getMenus());
+		yield put(getMenuCounts());
 	}
 }
 
-function* handleFetchMenus() {
+function* handleGetMenus() {
 	try {
 		const res = yield call(CommonService.getMenus);
 		const menus = res.data.data;
 
-		yield put(fetchMenusSuccess(menus));
+		yield put(getMenusSuccess(menus));
 		yield put(setActiveMenu(menus[0]));
-		yield call(EventBus.publishers.getMenusSuccess, { menu: menus[0] });
+		yield call(EventBus.publishers.menusLoad, new MenusLoad(menus[0]));
 	} catch (error) {
-		yield put(fetchMenusFailure(error.message));
+		yield put(getMenusFailure(error.message));
 	}
 }
 
-function* handleFetchMenuCounts() {
+function* handleGetMenuCounts() {
 	try {
-		const res = yield call(CommonService.getMenuCounts);
+		const res = yield call(CommonService.getMenuCount);
 
 		if (res.data.error) throw new Error(res.data.error.message);
 
 		const counts = res.data.data;
 
-		yield put(fetchMenuCountsSuccess(counts));
+		yield put(getMenuCountsSuccess(counts));
 	} catch (error) {
-		yield put(fetchMenuCountsFailure(error.message));
+		yield put(getMenuCountsFailure(error.message));
 	}
 }
 
 // watchers
-function* watchFetchUser() {
-	yield takeLatest(ActionTypes.FETCH_USER, handleFetchUser);
+function* watchCheckUserSession() {
+	yield takeLatest(ActionTypes.CHECK_USER_SESSION, handleCheckUserSession);
+}
+
+function* watchGetUser() {
+	yield takeLatest(ActionTypes.GET_USER, handleGetUser);
 }
 
 function* watchSetActiveStep() {
 	yield takeLatest(ActionTypes.SET_ACTIVE_STEP, handleSetActiveStep);
 }
 
-function* watchFetchMenus() {
-	yield takeLatest(ActionTypes.FETCH_MENUS, handleFetchMenus);
+function* watchGetMenus() {
+	yield takeLatest(ActionTypes.GET_MENUS, handleGetMenus);
 }
 
-function* watchFetchMenuCounts() {
-	yield takeLatest(ActionTypes.FETCH_MENU_COUNTS, handleFetchMenuCounts);
+function* watchGetMenuCounts() {
+	yield takeLatest(ActionTypes.GET_MENU_COUNTS, handleGetMenuCounts);
 }
 
 const userSagas = [
-	call(watchFetchUser),
+	call(watchCheckUserSession),
+	call(watchGetUser),
 	call(watchSetActiveStep),
-	call(watchFetchMenus),
-	call(watchFetchMenuCounts),
+	call(watchGetMenus),
+	call(watchGetMenuCounts),
 ];
 
 export default userSagas;

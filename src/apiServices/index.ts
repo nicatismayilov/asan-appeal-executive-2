@@ -10,6 +10,11 @@ import generateKey from "utils/generateKey";
 
 // const isDev = origin === "http://mreg.asan.org" || process.env.NODE_ENV === "development";
 
+export enum API_URL {
+	AMUR_REGISTRATION = "amurregistration",
+	EASY_APPEAL = "easyappeal",
+}
+
 const axiosInstance = axios.create({
 	// baseURL: isDev ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL,
 	baseURL: process.env.REACT_APP_BASE_URL,

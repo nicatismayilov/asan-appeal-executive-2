@@ -8,19 +8,17 @@ import {
 	getRequestFailure,
 } from "./actions";
 import { selectActiveMenu } from "../user/selectors";
-import * as RequestsService from "apiServices/requestsService";
+import RequestsService from "apiServices/requestsService";
 import { Menu } from "types/common";
 
 // workers
 function* handleGetRequests(action: GetRequests) {
 	const activeMenu: Menu = yield select(selectActiveMenu);
+	const type = activeMenu.type.toLocaleLowerCase();
+	const { payload } = action;
 
 	try {
-		const res = yield call(
-			RequestsService.getRequests,
-			action.payload,
-			activeMenu.type.toLocaleLowerCase()
-		);
+		const res = yield call(RequestsService.getRequests, payload, type);
 		const { entities, totalCount } = res.data.data;
 
 		yield put(

@@ -1,19 +1,25 @@
 import { ActionTypes, Action } from "./types";
-import { Step, UserInformation } from "types/user";
+import { Step, User } from "types/user";
 import { Menu } from "types/common";
 
-export const fetchUser = (): Action => ({
-	type: ActionTypes.FETCH_USER,
+export const checkUserSession = (): Action => {
+	return {
+		type: ActionTypes.CHECK_USER_SESSION,
+	};
+};
+
+export const getUser = (): Action => ({
+	type: ActionTypes.GET_USER,
 });
 
-export const fetchUserSuccess = (user: UserInformation): Action => ({
-	type: ActionTypes.FETCH_USER_SUCCESS,
-	payload: user,
+export const getUserSuccess = (payload: User): Action => ({
+	type: ActionTypes.GET_USER_SUCCESS,
+	payload,
 });
 
-export const fetchUserFailure = (error: string): Action => ({
-	type: ActionTypes.FETCH_USER_FAILURE,
-	payload: error,
+export const getUserFailure = (payload: string): Action => ({
+	type: ActionTypes.GET_USER_FAILURE,
+	payload,
 });
 
 export const setActiveStep = (s: Step): Action => {
@@ -23,31 +29,31 @@ export const setActiveStep = (s: Step): Action => {
 	};
 };
 
-export const fetchMenus = (): Action => ({
-	type: ActionTypes.FETCH_MENUS,
+export const getMenus = (): Action => ({
+	type: ActionTypes.GET_MENUS,
 });
 
-export const fetchMenusSuccess = (menus: Menu[]): Action => ({
-	type: ActionTypes.FETCH_MENUS_SUCCESS,
+export const getMenusSuccess = (menus: Menu[]): Action => ({
+	type: ActionTypes.GET_MENUS_SUCCESS,
 	payload: menus,
 });
 
-export const fetchMenusFailure = (error: string): Action => ({
-	type: ActionTypes.FETCH_MENUS_FAILURE,
+export const getMenusFailure = (error: string): Action => ({
+	type: ActionTypes.GET_MENUS_FAILURE,
 	payload: error,
 });
 
-export const fetchMenuCounts = (): Action => ({
-	type: ActionTypes.FETCH_MENU_COUNTS,
+export const getMenuCounts = (): Action => ({
+	type: ActionTypes.GET_MENU_COUNTS,
 });
 
-export const fetchMenuCountsSuccess = (countsObj: { [menu: string]: string }): Action => ({
-	type: ActionTypes.FETCH_MENU_COUNTS_SUCCESS,
+export const getMenuCountsSuccess = (countsObj: { [menu: string]: string }): Action => ({
+	type: ActionTypes.GET_MENU_COUNTS_SUCCESS,
 	payload: countsObj,
 });
 
-export const fetchMenuCountsFailure = (error: string): Action => ({
-	type: ActionTypes.FETCH_MENU_COUNTS_FAILURE,
+export const getMenuCountsFailure = (error: string): Action => ({
+	type: ActionTypes.GET_MENU_COUNTS_FAILURE,
 	payload: error,
 });
 

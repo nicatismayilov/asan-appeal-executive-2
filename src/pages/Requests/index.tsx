@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory, useRouteMatch } from "react-router-dom";
-// import { motion, AnimatePresence, Variants } from "framer-motion";
-// import { useFormik } from "formik";
+import { format } from "date-fns";
 
 import { getRequests } from "store/requests/actions";
 import {
@@ -13,72 +12,18 @@ import {
 } from "store/requests/selectors";
 import { selectActiveMenuCanEdit, selectActiveMenu } from "store/user/selectors";
 
-// import Scrollbar from "components/Scrollbar";
-import Table, { TableColumn, Pagination, Sorter } from "components/Table";
-// import TextField from "components/TextField";
-// import Select from "components/Select";
-import TableImage from "layoutComponents/TableImage";
-import Button from "components/Button";
-import Skeleton from "components/Skeleton";
+import Table, { Pagination, Sorter } from "components/Table";
+import Filters from "./Filters";
 
-// import requestsColumns from "./requestsTable";
-// import problemsColumns from "./problemsTable";
+import { requestsTableColumns, problemTableColumns } from "./tableColumns";
 import { Problem, Request } from "types/requests";
+import { Filters as FiltersType } from "./Filters/form";
 
-// const filtersAnimationVariants: Variants = {
-// 	active: { height: "auto", opacity: 1, marginTop: 10 },
-// 	inactive: { height: 0, opacity: 0, marginTop: 0 },
-// };
+import "./styles.scss";
 
 interface RouteParams {
 	menu: string;
 }
-
-const tableColumns: TableColumn<Problem>[] = [
-	{
-		accessor: "coverMedia",
-		Cell: (record) => <TableImage url={record.value} height={50} width={50} />,
-		Header: "",
-	},
-	{
-		accessor: "title",
-		Header: "Müraciətin mətni",
-	},
-	{
-		accessor: "executive",
-		Header: "Nəzarət orqanı",
-		Cell: ({ value }) => value?.name || "-",
-	},
-	{
-		accessor: (row) => {
-			const address =
-				row.region.name +
-				(row.street ? "," + row.street.name : "") +
-				(row.address ? "," + row.address.replace(row.region.name, "") : "");
-
-			return address ? address.replaceAll(", ,", ",").replace(/,\s*$/, "") : "—";
-		},
-		Header: "Müraciət ünvanı",
-		id: "problemAddress",
-	},
-	{
-		accessor: "dateStr",
-		Header: "Müraciət tarixi",
-		Cell: ({ value }) => <div style={{ width: 150 }}>{value}</div>,
-		disableSortBy: false,
-	},
-	{
-		accessor: "id",
-		Cell: ({ value }) => (
-			<div style={{ width: 75 }}>
-				<Button data-reqid={value} size='small'>
-					{/* {canEdit ? "Bax" : "Ətraflı"} */}
-					Ətraflı
-				</Button>
-			</div>
-		),
-	},
-];
 
 const pageSizeOptions = [10, 25, 50, 100];
 
@@ -91,118 +36,126 @@ const Requests: React.FC = () => {
 	const routeParams = useParams<RouteParams>();
 	const history = useHistory();
 	const match = useRouteMatch();
-	// const requests = useSelector(selectRequests);
+	const requests = useSelector(selectRequests);
 	const problems = useSelector(selectProblems);
 	const requestsTotalCount = useSelector(selectRequestsTotalCount);
 	const loading = useSelector(selectRequestsLoading);
 	const canEdit = useSelector(selectActiveMenuCanEdit);
-	// const activeMenu = useSelector(selectActiveMenu);
+	const activeMenu = useSelector(selectActiveMenu);
 	const [pagination, setPagination] = useState<Pagination>({ pageIndex: 0, pageSize: 10 });
-	const [sorter, setSorter] = useState<Sorter<Problem>>([]);
-	// const [filtersActive, setFiltersActive] = useState(false);
+	const [sorter, setSorter] = useState<Sorter<Problem | Request>>([]);
 
-	const handleTableChange = useCallback((p: Pagination, s: Sorter<Problem>) => {
-		setPagination(p);
-		setSorter(s);
-	}, []);
-
-	const clickHandler = useCallback(
+	const buttonHandler = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 			const id = (e.currentTarget.dataset["reqid"] || -1).toString();
+
 			history.push(`${match.url}/${id}`);
 		},
 		[history, match.url]
 	);
 
-	// const requestsTableColumns = useMemo(() => {
-	// 	return requestsColumns({ canEdit, buttonHandler: clickHandler });
-	// }, [canEdit, clickHandler]);
+	const requestColumns = useMemo(() => {
+		return requestsTableColumns({ canEdit, buttonHandler });
+	}, [canEdit, buttonHandler]);
 
-	// const problemsTableColumns = useMemo(() => {
-	// 	return problemsColumns({
-	// 		canEdit,
-	// 		buttonHandler: clickHandler,
-	// 	});
-	// }, [canEdit, clickHandler]);
+	const problemColumns = useMemo(() => {
+		return problemTableColumns({ canEdit, buttonHandler });
+	}, [canEdit, buttonHandler]);
 
-	useEffect(() => {
+	const requestParams = useMemo(() => {
 		const menu = routeParams.menu;
 		const max = pagination.pageSize;
 		const offset = pagination.pageIndex * pagination.pageSize;
+		const sort_by = sorter[0] && sorter[0].id;
+		const order: "asc" | "desc" | undefined = sorter[0] && (sorter[0].desc ? "desc" : "asc");
 
-		dispatch(getRequests({ menu, max, offset }));
-	}, [dispatch, pagination, routeParams.menu]);
+		return { menu, max, offset, sort_by, order };
+	}, [pagination.pageIndex, pagination.pageSize, routeParams.menu, sorter]);
+
+	const handleProblemsTableChange = useCallback((p: Pagination, s: Sorter<Problem>) => {
+		setPagination(p);
+		setSorter(s);
+	}, []);
+
+	const handleRequestsTableChange = useCallback((p: Pagination, s: Sorter<Request>) => {
+		setPagination(p);
+		setSorter(s);
+	}, []);
+
+	const handleSearch = useCallback(
+		(filters: FiltersType) => {
+			const dateFormat = "dd.MM.yyyy HH:mm:ss";
+			const startDateStr = filters.startDateStr && format(filters.startDateStr, dateFormat);
+			const endDateStr = filters.endDateStr && format(filters.endDateStr, dateFormat);
+			const priority = filters.priority?.name;
+			const parentOfficeId = filters.parentOfficeId?.id;
+			const officeId = filters.officeId?.id;
+			const regionId = filters.regionId?.id;
+			const executorUUID = filters.executorUUID?.uuid;
+			const executiveId = filters.executiveId?.id;
+			const representationId = filters.representationId?.id;
+			const stepId = filters.stepId?.id;
+			const { problemNum, requestNum, completed } = filters;
+
+			dispatch(
+				getRequests({
+					...requestParams,
+					startDateStr,
+					endDateStr,
+					priority,
+					parentOfficeId,
+					officeId,
+					regionId,
+					executorUUID,
+					executiveId,
+					representationId,
+					stepId,
+					problemNum,
+					requestNum,
+					completed,
+				})
+			);
+		},
+		[dispatch, requestParams]
+	);
+
+	useEffect(() => {
+		dispatch(getRequests({ ...requestParams }));
+	}, [dispatch, requestParams]);
 
 	return (
 		<div className='w-100 h-100'>
+			<Filters onSearch={handleSearch} />
+
 			<div className='pa-10'>
-				<div className='mb-10'>
-					{/* <div className='d-flex justify-start align-center'>
-							<button onClick={() => setFiltersActive((prev) => !prev)}>toggle</button>
-
-							<span className='text-subtitle-1 font-weight-medium ml-5 employees-list-title'>
-								Axtarış filtrləri
-							</span>
-						</div> */}
-
-					{/* <AnimatePresence exitBeforeEnter>
-							{filtersActive && (
-								<motion.div
-									initial='inactive'
-									animate='active'
-									exit='inactive'
-									variants={filtersAnimationVariants}
-									transition={{ type: "spring", stiffness: 700, damping: 50 }}
-									className='card'
-									style={{ overflow: "hidden" }}
-								>
-									<div className='row pa-6'>
-										
-									</div>
-								</motion.div>
-							)}
-						</AnimatePresence> */}
-				</div>
-
-				{/* {activeMenu.type === "REQUEST" && (
+				{activeMenu.type === "REQUEST" && (
 					<Table
 						data={requests}
-						columns={requestsTableColumns}
+						columns={requestColumns}
 						totalCount={requestsTotalCount}
-						serverSide
-						onChange={handleTableChange}
-						pagination={pagination}
+						onChange={handleRequestsTableChange}
 						loading={loading}
-						virtual
+						showTotal={showTotal}
+						showPageSizeOptions
+						pageSizeOptions={pageSizeOptions}
+						serverSide
 					/>
-				)} */}
+				)}
 
-				{/* {activeMenu.type === "PROBLEM" && (
+				{activeMenu.type === "PROBLEM" && (
 					<Table
 						data={problems}
-						columns={problemsTableColumns}
+						columns={problemColumns}
 						totalCount={requestsTotalCount}
-						serverSide
-						onChange={handleTableChange}
-						pagination={pagination}
+						onChange={handleProblemsTableChange}
 						loading={loading}
-						virtual
+						showTotal={showTotal}
+						showPageSizeOptions
+						pageSizeOptions={pageSizeOptions}
+						serverSide
 					/>
-				)} */}
-
-				<Table
-					data={problems}
-					columns={tableColumns}
-					totalCount={requestsTotalCount}
-					onChange={handleTableChange}
-					loading={loading}
-					showTotal={showTotal}
-					showPageSizeOptions
-					pageSizeOptions={pageSizeOptions}
-					serverSide
-				/>
+				)}
 			</div>
-			{/* </Scrollbar> */}
 		</div>
 	);
 };

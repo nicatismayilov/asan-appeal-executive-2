@@ -1,12 +1,29 @@
-import axios from "./index";
+import axios, { API_URL } from ".";
 
-interface SignInPayload {
+class AuthService {
+	private static instance: AuthService;
+
+	private constructor() {}
+
+	static getInstance() {
+		if (!AuthService.instance) {
+			AuthService.instance = new AuthService();
+		}
+
+		return AuthService.instance;
+	}
+
+	public signIn(params: SignInParams) {
+		const { username, password } = params;
+
+		return axios.post(`/${API_URL.AMUR_REGISTRATION}/v1/auth/authenticate`, { username, password });
+	}
+}
+
+/* Parameter Interfaces */
+interface SignInParams {
 	username: string;
 	password: string;
 }
 
-export const signIn = (payload: SignInPayload) => {
-	const { username, password } = payload;
-
-	return axios.post("/amurregistration/v1/auth/authenticate", { username, password });
-};
+export default AuthService.getInstance();

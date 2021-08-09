@@ -1,7 +1,7 @@
 .light {
-  --table-bg-color: #fff;
-  --table-thead-bg-color: #74879b38;
-  --table-thead-bg-color-hover: #74879b91;
+  --table-bg: #fff;
+  --table-thead-bg: #74879b38;
+  --table-thead-bg-hover: #74879b91;
   --table-title-text-color: #140810;
   --table-tr-border-color: #eaeff4;
   --table-th-border-color: #9b9d9e;
@@ -9,9 +9,9 @@
 }
 
 .dark {
-  --table-bg-color: #242526;
-  --table-thead-bg-color: #4759e44b;
-  --table-thead-bg-color-hover: #4759e483;
+  --table-bg: #242526;
+  --table-thead-bg: #4759e44b;
+  --table-thead-bg-hover: #4759e483;
   --table-title-text-color: #fafafa;
   --table-tr-border-color: #4e4f50;
   --table-th-border-color: #757677;
@@ -20,7 +20,7 @@
 
 .table-container {
   width: 100%;
-  background-color: var(--table-bg-color);
+  background-color: var(--table-bg);
 
   border-radius: 12px;
   overflow: hidden;
@@ -116,7 +116,7 @@
     &-icon {
       height: 80px;
       width: 80px;
-      fill: var(--table-thead-bg-color);
+      fill: var(--table-thead-bg);
       margin-bottom: 5px;
       margin-top: 20px;
     }
@@ -128,7 +128,7 @@
   }
 
   &-thead {
-    background-color: var(--table-thead-bg-color);
+    background-color: var(--table-thead-bg);
     padding: 0 10px;
     transition: border-color 50ms, background-color 50ms, color 75ms;
   }
@@ -166,7 +166,7 @@
     color: var(--table-th-color);
     position: relative;
 
-    &-sort {
+    &-sorter {
       position: absolute;
       top: 50%;
       right: 2.5px;

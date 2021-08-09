@@ -1,17 +1,21 @@
-import { Organization } from "./organization";
+import { Structure } from "./structures";
 
-export interface UserInformation {
-	image: string;
+export interface User {
+	uuid: string;
 	pin: string;
-	name: string;
-	surname: string;
-	father: string;
-	birthDate: string;
-	gender: Gender;
-	role: Role;
-	address: string;
+	firstName: string;
+	lastName: string;
+	fatherName: string;
+	email?: string;
+	address?: string;
+	structure: Structure;
 	steps: Step[];
-	company: Organization;
+	photo: string;
+	role: Role;
+	birthdayStr: string;
+	gender: boolean;
+	taskCount: number;
+	mobilePhoneNumber: string;
 }
 
 export type Gender = "Kişi" | "Qadın";
@@ -32,4 +36,21 @@ export interface Step {
 	id: number;
 	label: string;
 	name: string;
+	defaultPath: string;
+	selectExecutor: boolean;
+	fileAnswer: boolean;
+	showPartialList: boolean;
+	uncheckOffice: boolean;
+	showNotificationBar: boolean;
+	canSearchByExecutive: boolean;
+	canSearchByRepresentation: boolean;
+	canSearchByParentOffice: boolean;
+	canSearchBySuboffice: boolean;
+	canSeeOperations: boolean;
+	canIdentifyStreet: boolean;
+	canUpdateProblemInfo: boolean;
+	canAddNewRequest: boolean;
+	canAssest: boolean;
+	canSearchByCategory: boolean;
+	canSearchByVerifiedDate: boolean;
 }

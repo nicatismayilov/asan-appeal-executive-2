@@ -1,11 +1,11 @@
 export type Listener<EventType> = (e: EventType) => void;
 
-interface ObserverInterface<EventType> {
+interface IObserver<EventType> {
 	subscribe: (listener: Listener<EventType>) => () => void;
 	publish: (event: EventType) => void;
 }
 
-class Observer<EventType> implements ObserverInterface<EventType> {
+class Observer<EventType> implements IObserver<EventType> {
 	private listeners: Listener<EventType>[] = [];
 
 	subscribe(listener: Listener<EventType>): () => void {

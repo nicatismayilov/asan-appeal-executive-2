@@ -139,7 +139,7 @@
     & > svg {
       height: 50%;
       width: 50%;
-      fill: #fff;
+      fill: var(--date-range-picker-label-color);
     }
   }
 

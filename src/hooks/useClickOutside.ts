@@ -15,13 +15,14 @@ const useClickOutside = (args: Args) => {
 		const listener = (event: ClickOutsideEvent) => {
 			if (ref instanceof Array) {
 				if (ref.some((r) => r.current && r.current.contains(event.target as Node))) return;
-
 				handler(event);
 			} else {
 				const el = ref?.current;
+
 				if (!el || el.contains((event?.target as Node) || null)) {
 					return;
 				}
+
 				handler(event);
 			}
 		};

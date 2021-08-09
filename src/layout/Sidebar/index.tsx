@@ -69,8 +69,10 @@ const Sidebar: React.FC<Props> = (props) => {
 	}, [canUseAdminPanel, history, match.url]);
 
 	useEffect(() => {
-		const unsubscribe = EventBus.subscribers.onGetMenusSuccess((e) => {
-			history.push(`${match.url}/requests/${e.menu.label}`);
+		const unsubscribe = EventBus.subscribers.onMenusLoad((event) => {
+			const { menu } = event;
+
+			history.push(`${match.url}/requests/${menu.label}`);
 		});
 
 		return () => {

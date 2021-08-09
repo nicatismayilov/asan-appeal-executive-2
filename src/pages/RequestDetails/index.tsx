@@ -1,7 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
 import { useParams, useHistory, useRouteMatch } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { useRect } from "@reach/rect";
 // import { useFormik } from "formik";
 
 import { getRequest } from "store/requests/actions";
@@ -12,7 +11,7 @@ import Spinner from "components/Spinner";
 import Scrollbar from "components/Scrollbar";
 import Icon from "components/Icon";
 import Accordion, { AccordionData } from "components/Accordion";
-import Map from "components/Map";
+// import Map from "components/Map";
 // import TextArea from "components/TextArea";
 import HistoryItem from "./components/HistoryItem";
 
@@ -33,7 +32,7 @@ const RequestDetails: React.FC = () => {
 	const request = useSelector(selectRequest);
 	const activeMenu = useSelector(selectActiveMenu);
 	const mapContainerRef = useRef<HTMLDivElement>(null);
-	const mapContainerRect = useRect(mapContainerRef, { observe: true });
+	// const mapContainerRect = useRect(mapContainerRef, { observe: true });
 
 	const accordionData = useMemo<AccordionData[]>(() => {
 		return [
@@ -94,7 +93,7 @@ const RequestDetails: React.FC = () => {
 							</div>
 
 							<div ref={mapContainerRef} className='col-6 pl-2'>
-								{mapContainerRect && (
+								{/* {mapContainerRect && (
 									<Map
 										width='100%'
 										height={mapContainerRect.width / 2}
@@ -103,7 +102,7 @@ const RequestDetails: React.FC = () => {
 										center={[request.latitude, request.longitude]}
 										zoom={15}
 									/>
-								)}
+								)} */}
 							</div>
 						</div>
 					)}

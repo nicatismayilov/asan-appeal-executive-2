@@ -1,4 +1,4 @@
-import { Organization } from "./organization";
+import { Structure } from "./structures";
 import { Role, Step } from "./user";
 
 export interface Employee {
@@ -9,7 +9,7 @@ export interface Employee {
 	fatherName: string;
 	email: string;
 	address: string;
-	company: Organization;
+	structure: Structure;
 	steps: Step[];
 	photo: string;
 	role: Role;

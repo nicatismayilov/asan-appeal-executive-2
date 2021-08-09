@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import classnames from "classnames";
 
-import { ReactComponent as CheckIcon } from "./assets/check.svg";
+import Icon from "components/Icon";
+
 import "./styles.scss";
 
 interface Props {
-	value: boolean;
+	value: boolean | "indefinite";
 	onCheck: (value: boolean) => void;
 	textPosition?: "top" | "right" | "bottom" | "left";
 }
@@ -39,14 +40,20 @@ const Checkbox: React.FC<Props> = (props) => {
 	//
 
 	return (
-		<div className={wrapperClass} onClick={() => onCheck(!value)}>
+		<div
+			className={wrapperClass}
+			onClick={(e) => {
+				e.stopPropagation();
+				onCheck(!value);
+			}}
+		>
 			<div className={checkboxClass}>
 				<motion.div
 					animate={{ scale: value ? 1 : 0 }}
 					transition={{ type: "spring", stiffness: 1000, damping: 25 }}
 					className='checkbox-icon'
 				>
-					<CheckIcon />
+					<Icon icon={value === "indefinite" ? "hozirontal-line" : "check"} />
 				</motion.div>
 			</div>
 

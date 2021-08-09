@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 import { motion, AnimatePresence, Variants, Transition } from "framer-motion";
 import classnames from "classnames";
 
@@ -12,7 +12,6 @@ import {
 	selectUserLoading,
 	selectUserRole,
 	selectUserSteps,
-	selectUserCompany,
 	selectActiveStep,
 	selectCanUseAdminPanel,
 } from "store/user/selectors";
@@ -22,7 +21,6 @@ import Switch from "components/Switch";
 
 import useOnClickOutside from "hooks/useClickOutside";
 
-import { Step } from "types/user";
 import { setIsDarkMode, getIsDarkMode } from "utils/localStorage";
 import { createDefaultStep } from "types/utils";
 
@@ -39,13 +37,12 @@ const variants: Variants = {
 const transition: Transition = { bounce: 0, duration: 0.15 };
 
 const Header: React.FC = () => {
-	const history = useHistory();
+	// const history = useHistory();
 	const dispatch = useDispatch();
 	const userImage = useSelector(selectUserImage);
 	const userFullname = useSelector(selectUserFullname);
 	const userRole = useSelector(selectUserRole);
 	const userSteps = useSelector(selectUserSteps);
-	const userCompany = useSelector(selectUserCompany);
 	const activeStep = useSelector(selectActiveStep);
 	const userLoading = useSelector(selectUserLoading);
 	const canUseAdminPanel = useSelector(selectCanUseAdminPanel);
@@ -67,13 +64,6 @@ const Header: React.FC = () => {
 		if (step.id !== activeStep.id) dispatch(setActiveStep(step));
 	};
 
-	const handleSetAdminStep = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-		e.stopPropagation();
-		const adminStep: Step = { id: 9999, label: "Admin", name: "ADMIN" };
-		dispatch(setActiveStep(adminStep));
-		history.push("/main/admin");
-	};
-
 	const handleToggleMenuOpen = useCallback(() => {
 		setMenuOpen((prev) => !prev);
 	}, []);
@@ -83,8 +73,8 @@ const Header: React.FC = () => {
 	}, []);
 
 	const handleGoToProfile = useCallback(() => {
-		history.push("/main/profile");
-	}, [history]);
+		// history.push("/main/profile");
+	}, []);
 
 	const handleToggleDarkMode = useCallback(() => {
 		setDarkMode((prev) => !prev);
@@ -127,7 +117,10 @@ const Header: React.FC = () => {
 					</div>
 
 					{!userLoading ? (
-						<h3 className='user-fullname'>{userFullname}</h3>
+						<h3 className='user-fullname'>
+							{userFullname}
+							<span>{activeStep.name}</span>
+						</h3>
 					) : (
 						<Skeleton type='text' width={150} />
 					)}
@@ -166,7 +159,6 @@ const Header: React.FC = () => {
 
 									<div className='header-menu-user-info'>
 										<span>{userFullname}</span>
-										<span>{userCompany?.name}</span>
 										<span>{userRole?.name}</span>
 									</div>
 								</button>
@@ -190,7 +182,6 @@ const Header: React.FC = () => {
 											"header-menu-btn header-menu-btn--with-border mb-5 header-menu-btn--not-shrink d-flex justify-between": true,
 											"header-menu-btn--active": activeStep.id === 9999,
 										})}
-										onClick={handleSetAdminStep}
 									>
 										Tənzimləmələr
 									</div>

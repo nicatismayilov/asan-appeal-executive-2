@@ -12,10 +12,19 @@ interface Props {
 	text?: string | number | ReactNode;
 	backgroundColor?: string;
 	disabled?: boolean;
+	distanceX?: number;
+	distanceY?: number;
 }
 
 const Badge: React.FC<Props> = (props) => {
-	const { text, children, backgroundColor = "#4759e4", disabled = false } = props;
+	const {
+		text,
+		children,
+		backgroundColor = "#4759e4",
+		disabled = false,
+		distanceX = 0,
+		distanceY = 0,
+	} = props;
 	const badgeRef = useRef<HTMLDivElement>(null);
 	const badgeKey = useRef(generateKey());
 	const rect = useRect(badgeRef);
@@ -31,7 +40,10 @@ const Badge: React.FC<Props> = (props) => {
 
 			{!disabled &&
 				createPortal(
-					<div className='badge-text' style={{ backgroundColor, ...computeStyles(rect) }}>
+					<div
+						className='badge-text'
+						style={{ backgroundColor, ...computeStyles({ rect, distanceX, distanceY }) }}
+					>
 						{text}
 					</div>,
 					document.getElementById("root") || document.createElement("div")

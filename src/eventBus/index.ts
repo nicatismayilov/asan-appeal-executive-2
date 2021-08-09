@@ -1,17 +1,12 @@
-import { Menu } from "types/common";
 import Observer, { Listener } from "./Observer";
+import { MenusLoad } from "./events";
 
-/* Events */
-export interface GetMenusSuccess {
-	menu: Menu;
-}
+export * from "./events";
 
-/* Observers Dictionary */
-// GMS -> GetMenusSuccess
-
+/* Singleton implementation of Global Event Bus */
 class EventBus {
 	private static instance: EventBus;
-	private GMS_Observer = new Observer<GetMenusSuccess>();
+	private MenusLoadObserver = new Observer<MenusLoad>();
 
 	private constructor() {}
 
@@ -24,14 +19,14 @@ class EventBus {
 	}
 
 	public publishers = {
-		getMenusSuccess(event: GetMenusSuccess): void {
-			EventBus.getInstance().GMS_Observer.publish(event);
+		menusLoad(event: MenusLoad): void {
+			EventBus.getInstance().MenusLoadObserver.publish(event);
 		},
 	};
 
 	public subscribers = {
-		onGetMenusSuccess(listener: Listener<GetMenusSuccess>): () => void {
-			return EventBus.getInstance().GMS_Observer.subscribe(listener);
+		onMenusLoad(listener: Listener<MenusLoad>): () => void {
+			return EventBus.getInstance().MenusLoadObserver.subscribe(listener);
 		},
 	};
 }

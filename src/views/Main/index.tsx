@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, CSSProperties } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchUser } from "store/user/actions";
+import { checkUserSession } from "store/user/actions";
 import { selectUserLoading } from "store/user/selectors";
 
 import Header from "layout/Header";
@@ -42,7 +42,7 @@ const Main: React.FC = () => {
 	}, [expanded]);
 
 	useEffect(() => {
-		dispatch(fetchUser());
+		dispatch(checkUserSession());
 	}, [dispatch]);
 
 	if (userLoading || loading) return <PageLoader />;
@@ -51,7 +51,7 @@ const Main: React.FC = () => {
 			<Header />
 
 			<div className='main-content'>
-				<div className='transition' style={sidebarWrapperStyles}>
+				<div className='transition sidebar-container' style={sidebarWrapperStyles}>
 					<div className='w-20vw h-100'>
 						<Sidebar expanded={expanded} onToggleExpand={handleToggleExpand} />
 					</div>

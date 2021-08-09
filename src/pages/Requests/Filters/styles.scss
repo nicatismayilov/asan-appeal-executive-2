@@ -1,0 +1,10 @@
+.filters {
+  &-container {
+    position: absolute;
+    background-color: var(--card-bg-color);
+    top: 0;
+    left: 0;
+    z-index: 4;
+    box-shadow: 0 2px 20px var(--header-box-shadow-color);
+  }
+}

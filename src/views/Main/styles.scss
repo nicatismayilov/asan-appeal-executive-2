@@ -5,7 +5,11 @@
 
   &-content {
     width: 100%;
-    height: calc(100% - 57px);
+    height: calc(100% - 65px);
     display: flex;
   }
+}
+
+.sidebar-container {
+  border-right: 1px solid var(--sidebar-border-bottom-color);
 }

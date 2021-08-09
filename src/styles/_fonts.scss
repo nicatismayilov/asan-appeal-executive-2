@@ -1,0 +1,25 @@
+$font-name: "San Francisco Pro";
+
+@font-face {
+  font-family: $font-name;
+  src: url("../assets/fonts/SF_PRO_REGULAR.woff2") format("woff2");
+  font-weight: 300 400;
+}
+
+@font-face {
+  font-family: $font-name;
+  src: url("../assets/fonts/SF_PRO_LIGHT.woff2") format("woff2");
+  font-weight: 100 200;
+}
+
+@font-face {
+  font-family: $font-name;
+  src: url("../assets/fonts/SF_PRO_MEDIUM.woff2") format("woff2");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: $font-name;
+  src: url("../assets/fonts/SF_PRO_SEMIBOLD.woff2") format("woff2");
+  font-weight: 600 900;
+}

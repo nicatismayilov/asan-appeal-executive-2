@@ -31,24 +31,26 @@ export interface Request {
 export interface Problem {
 	id: string;
 	title: string;
-	street: {
-		name: string;
-	};
+	street: { name: string };
 	dateStr: string;
 	address: string;
 	appealCount: number;
 	number: number;
-	executive?: {
-		name: string;
-	};
+	executive?: { name: string };
 	isViewed: boolean;
 	coverMedia: string;
 	appealDate: string;
-	priorityLevel: "CRITICAL" | "NORMAL" | "LOW";
-	region: {
-		name: string;
-	};
+	priorityLevel: PriorityName;
+	region: { name: string };
 	canBeJoined: boolean;
+}
+
+export type PriorityName = "CRITICAL" | "NORMAL" | "LOW";
+
+export interface Priority {
+	name: PriorityName;
+	title: string;
+	color: string;
 }
 
 export interface RequestAddress {

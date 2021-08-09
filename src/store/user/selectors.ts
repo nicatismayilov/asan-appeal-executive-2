@@ -10,18 +10,18 @@ export const selectUserLoading = createSelector(
 	(reducer) => reducer.isLoading
 );
 
-export const selectUserInfo = createSelector([selectUserReducer], (reducer) => reducer.user);
+export const selectUser = createSelector([selectUserReducer], (reducer) => reducer.user);
 
-export const selectUserImage = createSelector([selectUserInfo], (info) => info.image);
+export const selectUserImage = createSelector([selectUser], (user) => user.photo);
 
 export const selectUserFullname = createSelector(
-	[selectUserInfo],
-	(info) => `${info.name} ${info.surname}`
+	[selectUser],
+	(user) => `${user.firstName} ${user.lastName}`
 );
 
-export const selectUserCompany = createSelector([selectUserInfo], (info) => info.company);
+export const selectUserStructure = createSelector([selectUser], (user) => user.structure);
 
-export const selectUserRole = createSelector([selectUserInfo], (user) => user.role);
+export const selectUserRole = createSelector([selectUser], (user) => user.role);
 
 export const selectCanUseAdminPanel = createSelector(
 	[selectUserRole],
@@ -47,7 +47,7 @@ export const selectCanAddSubscriber = createSelector(
 
 export const selectIsSuperAdmin = createSelector([selectUserRole], (role) => role.isSAdmin);
 
-export const selectUserSteps = createSelector([selectUserInfo], (info) => info.steps);
+export const selectUserSteps = createSelector([selectUser], (user) => user.steps);
 
 export const selectActiveStep = createSelector(
 	[selectUserReducer],

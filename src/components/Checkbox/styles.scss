@@ -1,13 +1,24 @@
+.light {
+  --checkbox-bg: #fff;
+  --checkbox-border: #e1dfdf;
+}
+
+.dark {
+  --checkbox-bg: #242526;
+  --checkbox-border: #161616;
+}
+
 .checkbox {
-  height: 22px;
-  width: 22px;
-  border-radius: 6px;
-  border: 1px solid #aaaaaa;
+  height: 18px;
+  width: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--checkbox-border);
   transition: all 200ms;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 50ms;
+  background-color: var(--checkbox-bg);
 
   &-wrapper {
     display: flex;
@@ -47,8 +58,8 @@
   }
 
   &--active {
-    background-color: #4d4f52;
-    border-color: #4d4f52;
+    background-color: #4759e4;
+    border-color: #4759e4;
   }
 
   &-text {
