@@ -11,3 +11,7 @@ export interface IBaseEvent {
 export interface IMenusLoad extends IBaseEvent {
 	menu: Menu;
 }
+
+export interface IThemeChange extends IBaseEvent {
+	theme: "light" | "dark";
+}

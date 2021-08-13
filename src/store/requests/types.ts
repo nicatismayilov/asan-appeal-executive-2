@@ -1,7 +1,7 @@
-import { Problem, Request } from "types/requests";
-import { GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
+import { Problem, Request, Action as RequestAction } from "types/requests";
+import { GetActionsParams, GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
 
-// requests reducer interface
+/* Interface for Requests Reducer State */
 export interface RequestsReducerState {
 	requests: Request[];
 	problems: Problem[];
@@ -10,9 +10,11 @@ export interface RequestsReducerState {
 	totalCount: number;
 	selectedRequest: Request;
 	requestLoading: boolean;
+	actions: RequestAction[];
+	actionsLoading: boolean;
 }
 
-// action types
+/* Action Types Anum */
 export enum ActionTypes {
 	GET_REQUESTS = "GET_REQUESTS",
 	GET_REQUESTS_SUCCESS = "GET_REQUESTS_SUCCESS",
@@ -23,6 +25,10 @@ export enum ActionTypes {
 	GET_REQUEST = "GET_REQUEST",
 	GET_REQUEST_SUCCESS = "GET_REQUEST_SUCCESS",
 	GET_REQUEST_FAILURE = "GET_REQUEST_FAILURE",
+
+	GET_ACTIONS = "GET_ACTIONS",
+	GET_ACTIONS_SUCCESS = "GET_ACTIONS_SUCCESS",
+	GET_ACTIONS_FAILURE = "GET_ACTIONS_FAILURE",
 }
 
 export interface GetRequestsSuccessPayload {
@@ -31,7 +37,7 @@ export interface GetRequestsSuccessPayload {
 	problems: Problem[];
 }
 
-// action interfaces
+/* Action Interfaces */
 export interface GetRequests {
 	type: typeof ActionTypes.GET_REQUESTS;
 	payload: GetRequestsParams;
@@ -47,10 +53,14 @@ export interface GetRequestsFailure {
 	payload: string;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 export interface SetRequestsTotalCount {
 	type: typeof ActionTypes.SET_REQUESTS_TOTAL_COUNT;
 	payload: number;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 export interface GetRequest {
 	type: typeof ActionTypes.GET_REQUEST;
@@ -67,6 +77,24 @@ export interface GetRequestFailure {
 	payload: string;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+export interface GetActions {
+	type: typeof ActionTypes.GET_ACTIONS;
+	payload: GetActionsParams;
+}
+
+export interface GetActionsSuccess {
+	type: typeof ActionTypes.GET_ACTIONS_SUCCESS;
+	payload: RequestAction[];
+}
+
+export interface GetActionsFailure {
+	type: typeof ActionTypes.GET_ACTIONS_FAILURE;
+	payload: string;
+}
+
+/* Unified Action type for Requests Reducer */
 export type Action =
 	| GetRequests
 	| GetRequestsSuccess
@@ -74,4 +102,7 @@ export type Action =
 	| SetRequestsTotalCount
 	| GetRequest
 	| GetRequestSuccess
-	| GetRequestFailure;
+	| GetRequestFailure
+	| GetActions
+	| GetActionsSuccess
+	| GetActionsFailure;

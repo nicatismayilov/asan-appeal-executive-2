@@ -23,6 +23,7 @@ import useOnClickOutside from "hooks/useClickOutside";
 
 import { setIsDarkMode, getIsDarkMode } from "utils/localStorage";
 import { createDefaultStep } from "types/utils";
+import EventBus, { ThemeChangeEvent } from "eventBus";
 
 import { ReactComponent as UserProfile } from "assets/user.svg";
 import { ReactComponent as SidebarLogo } from "assets/logo.svg";
@@ -80,8 +81,9 @@ const Header: React.FC = () => {
 		setDarkMode((prev) => !prev);
 	}, []);
 
-	const toggleDarkModeEffect = () => {
+	useEffect(() => {
 		const body = document.querySelector("body");
+
 		if (body) {
 			if (darkMode) {
 				body.classList.add("dark");
@@ -92,10 +94,10 @@ const Header: React.FC = () => {
 				body.classList.remove("dark");
 				setIsDarkMode(false);
 			}
-		}
-	};
 
-	useEffect(toggleDarkModeEffect, [darkMode]);
+			EventBus.publishers.themeChange(new ThemeChangeEvent(darkMode ? "dark" : "light"));
+		}
+	}, [darkMode]);
 
 	return (
 		<header className='header'>

@@ -1,28 +1,57 @@
 .history-item {
-  padding: 6px 12px;
   display: flex;
-  flex-direction: column;
   font-size: 14px;
 
-  &-citizen {
-    & > span {
-      color: red;
-      margin-right: 6px;
-      font-weight: 500;
-    }
+  &:not(:last-of-type) {
+    margin-bottom: 20px;
   }
 
-  &-text {
-    & > span {
+  &-left {
+    width: 35%;
+    height: 100%;
+    padding-right: 4px;
+  }
+
+  &-right {
+    width: 65%;
+    height: 100%;
+    padding-left: 4px;
+  }
+
+  &-user {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+
+    &-fullname {
+      font-size: 16px;
+      font-weight: 600;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+
+    &-step {
+      font-size: 13px;
       font-weight: 500;
-      margin-right: 6px;
+      line-height: 1;
+      color: #4759e4;
+      background-color: #4759e428;
+      border-radius: 4px;
+      padding: 2px 4px;
+      padding-bottom: 4px;
     }
   }
 
   &-date {
-    & > span {
-      font-weight: 500;
-      margin-right: 6px;
+    font-size: 13px;
+  }
+
+  &-text {
+    font-size: 14px;
+
+    &--empty {
+      font-style: italic;
     }
   }
 }

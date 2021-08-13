@@ -53,6 +53,10 @@ import { ReactComponent as check } from "./svg/check.svg";
 import { ReactComponent as horizontalLine } from "./svg/horizontal-line.svg";
 import { ReactComponent as chevronUp } from "./svg/chevron-up.svg";
 import { ReactComponent as chevronDown } from "./svg/chevron-down.svg";
+import { ReactComponent as nearMe } from "./svg/near-me.svg";
+import { ReactComponent as plusMath } from "./svg/plus-math.svg";
+import { ReactComponent as subtract } from "./svg/subtract.svg";
+import { ReactComponent as activityHistory } from "./svg/activity-history.svg";
 
 const icons: { [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>> } = {
 	setting,
@@ -110,6 +114,10 @@ const icons: { [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGEleme
 	"horizontal-line": horizontalLine,
 	"chevron-up": chevronUp,
 	"chevron-down": chevronDown,
+	"near-me": nearMe,
+	"plus-math": plusMath,
+	subtract,
+	"activity-history": activityHistory,
 };
 
 export default icons;

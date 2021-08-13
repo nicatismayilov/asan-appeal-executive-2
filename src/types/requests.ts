@@ -1,3 +1,7 @@
+import { Category } from "./category";
+import { Structure } from "./structures";
+import { File } from "components/MediaGallery";
+
 export interface Request {
 	appealDate: string;
 	citizen: {
@@ -24,8 +28,16 @@ export interface Request {
 	number: number;
 	text: string;
 	addresses?: RequestAddress[];
-	fileList?: RequestFile[];
+	filesList?: RequestFile[];
 	textHistory?: RequestTextHistory[];
+	address: string;
+	title: string;
+	executive: Structure;
+	execStructures?: Structure[];
+	categories?: Category[];
+	type?: RequestType;
+	priorityLevel?: PriorityName;
+	lastOperation?: string;
 }
 
 export interface Problem {
@@ -58,15 +70,15 @@ export interface RequestAddress {
 	place_id: string;
 }
 
-export interface RequestFile {
+export interface RequestFile extends File {
 	distance: number;
 	latitude: number;
 	longitude: number;
-	length: number;
-	path: string;
+	length?: number;
 	sameAddress: boolean;
-	type: "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT" | "EXCEL" | "PDF";
 	uploadDateStr: string;
+	address?: string;
+	executive?: Structure;
 }
 
 export interface RequestTextHistory {
@@ -79,4 +91,18 @@ export interface RequestTextHistory {
 		fatherName: string;
 		taskCount: number;
 	};
+}
+
+export interface RequestType {
+	name: "COMPLAINT" | "OFFER";
+	title: string;
+}
+
+export interface Action {
+	id: number;
+	name: string;
+	dataRequired: boolean;
+	color: string;
+	inSentence: string;
+	askReason: boolean;
 }

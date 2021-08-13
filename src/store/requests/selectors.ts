@@ -33,3 +33,10 @@ export const selectRequest = createSelector(
 	[selectRequestsReducer],
 	(reducer) => reducer.selectedRequest
 );
+
+export const selectActions = createSelector([selectRequestsReducer], (reducer) => reducer.actions);
+
+export const selectActionLoading = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.actionsLoading
+);

@@ -1,12 +1,13 @@
 import Observer, { Listener } from "./Observer";
-import { MenusLoad } from "./events";
+import { MenusLoadEvent, ThemeChangeEvent } from "./events";
 
 export * from "./events";
 
 /* Singleton implementation of Global Event Bus */
 class EventBus {
 	private static instance: EventBus;
-	private MenusLoadObserver = new Observer<MenusLoad>();
+	private MenusLoadObserver = new Observer<MenusLoadEvent>();
+	private ThemeChangeObserver = new Observer<ThemeChangeEvent>();
 
 	private constructor() {}
 
@@ -19,14 +20,22 @@ class EventBus {
 	}
 
 	public publishers = {
-		menusLoad(event: MenusLoad): void {
+		menusLoad(event: MenusLoadEvent): void {
 			EventBus.getInstance().MenusLoadObserver.publish(event);
+		},
+
+		themeChange(event: ThemeChangeEvent): void {
+			EventBus.getInstance().ThemeChangeObserver.publish(event);
 		},
 	};
 
 	public subscribers = {
-		onMenusLoad(listener: Listener<MenusLoad>): () => void {
+		onMenusLoad(listener: Listener<MenusLoadEvent>): () => void {
 			return EventBus.getInstance().MenusLoadObserver.subscribe(listener);
+		},
+
+		onThemeChange(listener: Listener<ThemeChangeEvent>): () => void {
+			return EventBus.getInstance().ThemeChangeObserver.subscribe(listener);
 		},
 	};
 }

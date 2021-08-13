@@ -1,0 +1,48 @@
+.light {
+  --title-item-bg-color: #f0f2f5;
+  --title-item-text-color: #212121;
+  --title-item-border-focus-color: #b6cbfc;
+  --title-item-label-color: #424242;
+  --title-item-readonly-bg-color: #d1d7e1;
+  --title-item-readonly-color: #616161;
+}
+
+.dark {
+  --title-item-bg-color: #3a3b3c;
+  --title-item-text-color: #b0b3b8;
+  --title-item-border-focus-color: #394b76;
+  --title-item-label-color: #959596;
+  --title-item-readonly-bg-color: #797b7d;
+  --title-item-readonly-color: #bdbdbd;
+}
+
+.title-item {
+  padding: 4px 10px;
+  border-radius: 6px;
+  position: relative;
+  text-align: center;
+
+  &::after {
+    content: "";
+    width: 1px;
+    height: 60%;
+    background-color: var(--title-item-readonly-color);
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 4px;
+  }
+
+  &-label {
+    font-size: 13px;
+    color: var(--title-item-readonly-color);
+    margin-bottom: 4px;
+  }
+
+  &-text {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--title-item-text-color);
+  }
+}

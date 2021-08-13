@@ -17,7 +17,7 @@ import { selectIsAuthenticated } from "../auth/selectors";
 import { selectUser } from "./selectors";
 import UserService from "apiServices/userService";
 import CommonService from "apiServices/commonService";
-import EventBus, { MenusLoad } from "eventBus";
+import EventBus, { MenusLoadEvent } from "eventBus";
 import { User } from "types/user";
 
 // workers
@@ -25,7 +25,11 @@ function* handleCheckUserSession() {
 	const isAuth: boolean = yield select(selectIsAuthenticated);
 	const user: User = yield select(selectUser);
 
-	if (isAuth && user.uuid && user.pin) return;
+	if (isAuth && user.uuid && user.pin) {
+		yield put(getMenuCounts());
+
+		return;
+	}
 
 	yield put(getUser());
 }
@@ -58,7 +62,7 @@ function* handleGetMenus() {
 
 		yield put(getMenusSuccess(menus));
 		yield put(setActiveMenu(menus[0]));
-		yield call(EventBus.publishers.menusLoad, new MenusLoad(menus[0]));
+		yield call(EventBus.publishers.menusLoad, new MenusLoadEvent(menus[0]));
 	} catch (error) {
 		yield put(getMenusFailure(error.message));
 	}

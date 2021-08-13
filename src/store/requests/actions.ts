@@ -1,5 +1,5 @@
-import { GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
-import { Request } from "types/requests";
+import { GetActionsParams, GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
+import { Request, Action as RequestAction } from "types/requests";
 import { ActionTypes, Action, GetRequestsSuccessPayload } from "./types";
 
 export const getRequests = (params: GetRequestsParams): Action => {
@@ -23,7 +23,7 @@ export const getRequestsFailure = (error: string): Action => {
 	};
 };
 
-// -----------------------------------------------------------------
+/*------------------------------------------------------------------------------------------------*/
 
 export const setRequestsTotalCount = (count: number): Action => {
 	return {
@@ -32,7 +32,7 @@ export const setRequestsTotalCount = (count: number): Action => {
 	};
 };
 
-// -----------------------------------------------------------------
+/*------------------------------------------------------------------------------------------------*/
 
 export const getRequest = (payload: GetRequestParams): Action => {
 	return {
@@ -54,3 +54,20 @@ export const getRequestFailure = (payload: string): Action => {
 		payload,
 	};
 };
+
+/*------------------------------------------------------------------------------------------------*/
+
+export const getActions = (payload: GetActionsParams): Action => ({
+	type: ActionTypes.GET_ACTIONS,
+	payload,
+});
+
+export const getActionsSuccess = (payload: RequestAction[]): Action => ({
+	type: ActionTypes.GET_ACTIONS_SUCCESS,
+	payload,
+});
+
+export const getActionsFailure = (payload: string): Action => ({
+	type: ActionTypes.GET_ACTIONS_FAILURE,
+	payload,
+});

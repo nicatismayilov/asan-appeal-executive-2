@@ -1,70 +1,133 @@
-import { useRef, useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import { Icon as LeafletIcon, Map as MapType } from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import GoogleMapReact from "google-map-react";
+import classnames from "classnames";
 
-import generateKey from "utils/generateKey";
+import Icon from "components/Icon";
 
-import marker from "../Icon/svg/marker.svg";
+import EventBus from "eventBus";
+
+import { GoogleApiMap } from "./types";
+
+import { mapStylesLight, mapStylesDark } from "./mapStyles";
+
 import "./styles.scss";
 
-// const accessToken =
-// 	"pk.eyJ1IjoibmlqYXQtaXNtYXlpbG92IiwiYSI6ImNrcDFxNWJ2cjBzeDEycG13MGNib2VrZHMifQ.9oTJT7rViSnwYyR0mGARvw";
-
-const markerIcon = new LeafletIcon({
-	iconUrl: marker,
-	iconSize: [40, 40],
-	iconAnchor: [20, 40],
-});
+function toFixed3(n: number) {
+	return +n.toFixed(3);
+}
 
 interface Props {
 	height?: number | string;
 	width?: number | string;
 	longitude: number;
 	latitude: number;
-	center: [number, number];
+	center: { lat: number; lng: number };
 	zoom?: number;
 }
 
+const bootstrapURLKeys: GoogleMapReact.BootstrapURLKeys = {
+	key: "AIzaSyDyFjdIY7RT-iNZKleR3xEP9MvZ-nepJ54",
+	region: "AZ",
+	language: "az",
+};
+
 const Map: React.FC<Props> = (props) => {
 	const { height = 200, width = 400, longitude, latitude, center, zoom = 13 } = props;
-	const [map, setMap] = useState<MapType>();
-	const containerKeyRef = useRef(generateKey());
-	// const [viewport, setViewport] = useState({
-	// 	zoom,
-	// 	latitude,
-	// 	longitude,
-	// 	width,
-	// 	height,
-	// });
+	const [darkMode, setDarkMode] = useState(false);
+	const [controlledCenter, setControlledCenter] = useState<GoogleMapReact.Coords>(center);
+	const [controlledZoom, setControlledZoom] = useState(zoom);
+	const mapRef = useRef<GoogleApiMap>();
+
+	const handleGoogleApiLoaded = (value: { map: any; maps: any; ref: Element | null }) => {
+		const { map } = value;
+
+		mapRef.current = map;
+	};
+
+	const handleMapChange = useCallback((value: GoogleMapReact.ChangeEventValue) => {
+		setControlledCenter(value.center);
+		setControlledZoom(value.zoom);
+	}, []);
+
+	const handleReset = () => {
+		mapRef.current?.panTo({ lat: center.lat, lng: center.lng });
+	};
+
+	const handleZoomIncrement = () => {
+		mapRef.current?.setZoom(controlledZoom + 1);
+	};
+
+	const handleZoomDecrement = () => {
+		mapRef.current?.setZoom(controlledZoom - 1);
+	};
+
+	const options = useMemo<GoogleMapReact.MapOptions>(() => {
+		return {
+			disableDefaultUI: true,
+			zoomControl: false,
+			disableDoubleClickZoom: true,
+			styles: darkMode ? mapStylesDark : mapStylesLight,
+			scrollwheel: false,
+			panControl: true,
+			rotateControl: true,
+		};
+	}, [darkMode]);
 
 	useEffect(() => {
-		containerKeyRef.current = generateKey();
-	}, [height, width]);
+		const unsubscribe = EventBus.subscribers.onThemeChange((event) => {
+			const { theme } = event;
+
+			if (theme === "dark") setDarkMode(true);
+			else setDarkMode(false);
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, []);
 
 	return (
 		<div className='map' style={{ height, width }}>
-			<MapContainer
-				key={containerKeyRef.current}
-				center={center}
-				zoom={zoom}
-				scrollWheelZoom
-				whenCreated={setMap}
+			<GoogleMapReact
+				onGoogleApiLoaded={handleGoogleApiLoaded}
+				bootstrapURLKeys={bootstrapURLKeys}
+				defaultCenter={center}
+				defaultZoom={zoom}
+				yesIWantToUseGoogleMapApiInternals
+				options={options}
+				onChange={handleMapChange}
 			>
-				<TileLayer
-					attribution='<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-					url='https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=yLrkX2sfm5T5v5JXn69sU3DkgsDJSAafw7OCMYIIQVq4p0wdykcTUPjP55KJQqAM'
-				/>
+				<div
+					//@ts-ignore
+					lat={latitude}
+					lng={longitude}
+					className={`marker marker--${darkMode ? "dark" : "light"}`}
+				>
+					<div className='marker-indicator' />
+				</div>
+			</GoogleMapReact>
 
-				<Marker icon={markerIcon} position={[latitude, longitude]}></Marker>
-			</MapContainer>
+			<div className='map-buttons'>
+				<button
+					className={classnames({
+						"map-button map-button-reset mb-6 card": true,
+						"map-button-reset--active":
+							toFixed3(center.lat) !== toFixed3(controlledCenter.lat) ||
+							toFixed3(center.lng) !== toFixed3(controlledCenter.lng),
+					})}
+					onClick={handleReset}
+				>
+					<Icon icon='near-me' />
+				</button>
 
-			<button
-				style={{ position: "absolute" }}
-				onClick={() => map?.flyTo(center, zoom, { duration: 0.5 })}
-			>
-				reset
-			</button>
+				<button onClick={handleZoomIncrement} className='map-button map-button-zoom card'>
+					<Icon icon='plus-math' />
+				</button>
+
+				<button onClick={handleZoomDecrement} className='map-button map-button-zoom card'>
+					<Icon icon='subtract' />
+				</button>
+			</div>
 		</div>
 	);
 };

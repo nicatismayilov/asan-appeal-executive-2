@@ -2,8 +2,6 @@ import { useMemo, memo } from "react";
 import { motion, Transition, Variants } from "framer-motion";
 import classnames from "classnames";
 
-import { ComboboxValue } from "../..";
-
 import { ReactComponent as ClearIcon } from "../../assets/reset.svg";
 
 const variants: Variants = {
@@ -13,17 +11,17 @@ const variants: Variants = {
 
 const transition: Transition = { type: "spring", damping: 100, stiffness: 1000, mass: 5 };
 
-interface Props {
-	value: ComboboxValue;
+interface Props<T> {
+	value: T;
 	idx: number;
 	readonly: boolean;
-
+	render: (value: T) => any;
 	onDissmissValue: (idx: number) => void;
 }
 
-const ComboboxValueSlot: React.FC<Props> = (props) => {
+function ComboboxValueSlot<T>(props: Props<T>): React.ReactElement | null {
 	const { value, idx, readonly } = props;
-	const { onDissmissValue } = props;
+	const { onDissmissValue, render } = props;
 
 	const valueSlotClass = useMemo(() => {
 		return classnames({
@@ -31,11 +29,6 @@ const ComboboxValueSlot: React.FC<Props> = (props) => {
 			"combobox-value-slot--readonly": readonly,
 		});
 	}, [readonly]);
-
-	const handleDismissValue = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		const idx = +(e.currentTarget.dataset["idx"] || -1);
-		onDissmissValue(idx);
-	};
 
 	return (
 		<motion.div
@@ -48,20 +41,19 @@ const ComboboxValueSlot: React.FC<Props> = (props) => {
 			style={{ overflow: "hidden" }}
 		>
 			<div className={valueSlotClass} onClick={(e) => e.stopPropagation()}>
-				{value.text}
+				{render(value)}
 
 				{!readonly && (
 					<button
 						className='combobox-value-slot-remove-btn'
 						type='button'
-						data-idx={`${idx}`}
-						onClick={handleDismissValue}
+						onClick={() => onDissmissValue(idx)}
 						children={<ClearIcon />}
 					/>
 				)}
 			</div>
 		</motion.div>
 	);
-};
+}
 
-export default memo(ComboboxValueSlot);
+export default memo(ComboboxValueSlot) as typeof ComboboxValueSlot;

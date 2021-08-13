@@ -9,6 +9,8 @@ const initialState: RequestsReducerState = {
 	totalCount: 0,
 	selectedRequest: createDefaultRequest(),
 	requestLoading: false,
+	actions: [],
+	actionsLoading: false,
 };
 
 const reducer = (state = initialState, action: Action): RequestsReducerState => {
@@ -64,6 +66,26 @@ const reducer = (state = initialState, action: Action): RequestsReducerState => 
 			return {
 				...state,
 				requestLoading: false,
+				error: action.payload,
+			};
+
+		case ActionTypes.GET_ACTIONS:
+			return {
+				...state,
+				actionsLoading: true,
+			};
+
+		case ActionTypes.GET_ACTIONS_SUCCESS:
+			return {
+				...state,
+				actionsLoading: false,
+				actions: action.payload,
+			};
+
+		case ActionTypes.GET_ACTIONS_FAILURE:
+			return {
+				...state,
+				actionsLoading: false,
 				error: action.payload,
 			};
 

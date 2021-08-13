@@ -1,11 +1,13 @@
 import { takeLatest, call, put, select } from "redux-saga/effects";
-import { ActionTypes, GetRequests, GetRequest } from "./types";
+import { ActionTypes, GetRequests, GetRequest, GetActions } from "./types";
 import {
 	getRequestsSuccess,
 	getRequestsFailure,
 	setRequestsTotalCount,
 	getRequestSuccess,
 	getRequestFailure,
+	getActionsSuccess,
+	getActionsFailure,
 } from "./actions";
 import { selectActiveMenu } from "../user/selectors";
 import RequestsService from "apiServices/requestsService";
@@ -45,6 +47,18 @@ function* handleGetRequest(action: GetRequest) {
 	}
 }
 
+function* handleGetActions(action: GetActions) {
+	const { payload } = action;
+
+	try {
+		const res = yield call(RequestsService.getActions, payload);
+
+		yield put(getActionsSuccess(res.data.data));
+	} catch (error) {
+		yield put(getActionsFailure(error.message));
+	}
+}
+
 // watchers
 export function* watchGetRequests() {
 	yield takeLatest(ActionTypes.GET_REQUESTS, handleGetRequests);
@@ -54,6 +68,10 @@ export function* watchGetRequest() {
 	yield takeLatest(ActionTypes.GET_REQUEST, handleGetRequest);
 }
 
-const requestsSagas = [call(watchGetRequests), call(watchGetRequest)];
+export function* watchGetActions() {
+	yield takeLatest(ActionTypes.GET_ACTIONS, handleGetActions);
+}
+
+const requestsSagas = [call(watchGetRequests), call(watchGetRequest), call(watchGetActions)];
 
 export default requestsSagas;

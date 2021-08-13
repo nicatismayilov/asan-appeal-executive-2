@@ -2,7 +2,14 @@ import { Employee } from "types/employee";
 import { Structure, Region, StructureType } from "types/structures";
 import { Role, Step, User } from "types/user";
 import { Menu } from "types/common";
-import { Priority, Request, RequestAddress, RequestFile, RequestTextHistory } from "./requests";
+import {
+	Priority,
+	Request,
+	RequestAddress,
+	RequestFile,
+	RequestTextHistory,
+	RequestType,
+} from "./requests";
 
 export function createDefaultUser(): User {
 	return {
@@ -145,8 +152,12 @@ export function createDefaultRequest(): Request {
 		number: -1e19,
 		text: "",
 		addresses: [],
-		fileList: [],
+		filesList: [],
 		textHistory: [],
+		address: "",
+		title: "",
+		executive: createDefaultStructure(),
+		type: createDefaultRequestType(),
 	};
 }
 
@@ -181,6 +192,13 @@ export function createDefaultRequestTextHistory(): RequestTextHistory {
 			fatherName: "",
 			taskCount: 0,
 		},
+	};
+}
+
+export function createDefaultRequestType(): RequestType {
+	return {
+		name: "COMPLAINT",
+		title: "Şikayət",
 	};
 }
 

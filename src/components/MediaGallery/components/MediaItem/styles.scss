@@ -1,0 +1,35 @@
+.media-item {
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+
+  &--image {
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &-active-indicator {
+    height: calc(100% + 12px);
+    width: calc(100% + 12px);
+    background-color: transparent;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    border: 6px solid #4759e4c1;
+    animation: fadeIn 100ms ease-in-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -1,8 +1,8 @@
 import { Menu } from "types/common";
-import { IBaseEvent, IMenusLoad } from "./types";
+import { IBaseEvent, IMenusLoad, IThemeChange } from "./types";
 import generateKey from "utils/generateKey";
 
-export class BaseEvent implements IBaseEvent {
+class BaseEvent implements IBaseEvent {
 	public id: string;
 	public name: string;
 	public timestamp: Date;
@@ -14,12 +14,22 @@ export class BaseEvent implements IBaseEvent {
 	}
 }
 
-export class MenusLoad extends BaseEvent implements IMenusLoad {
+export class MenusLoadEvent extends BaseEvent implements IMenusLoad {
 	public menu: Menu;
 
-	public constructor(menu: Menu) {
+	constructor(menu: Menu) {
 		super("Menus Load");
 
 		this.menu = menu;
+	}
+}
+
+export class ThemeChangeEvent extends BaseEvent implements IThemeChange {
+	public theme: "light" | "dark";
+
+	constructor(theme: "light" | "dark") {
+		super("Theme Change");
+
+		this.theme = theme;
 	}
 }

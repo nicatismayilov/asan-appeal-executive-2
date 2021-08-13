@@ -5,7 +5,6 @@ import Button from "components/Button";
 import { prioritiesMap } from "types/utils";
 import { format, parse } from "date-fns";
 import { az } from "date-fns/locale";
-import Icon from "components/Icon";
 
 interface Arguments {
 	canEdit: boolean;
@@ -92,7 +91,7 @@ export function requestsTableColumns(args: Arguments): TableColumn<Request>[] {
 			Header: "Müraciət edən",
 			Cell: ({ value }) => (
 				<div style={{ width: 150 }}>
-					{`${value?.lastName} ${value?.firstName} ${value?.lastName}`}
+					{`${value?.lastName} ${value?.firstName} ${value?.fatherName}`}
 				</div>
 			),
 		},
@@ -148,21 +147,9 @@ function renderDate(value: string, hasSeconds: boolean) {
 
 	return (
 		<div className='d-flex flex-column align-center' style={{ width: 150 }}>
-			<div className='table-date-tag'>
-				{dateStr}
+			<div className='table-date-tag'>{dateStr}</div>
 
-				<div className='table-date-tag-icon'>
-					<Icon icon='calendar' />
-				</div>
-			</div>
-
-			<div className='table-date-tag'>
-				{timeStr}
-
-				<div className='table-date-tag-icon'>
-					<Icon icon='clock' />
-				</div>
-			</div>
+			<div className='table-date-tag'>{timeStr}</div>
 		</div>
 	);
 }
