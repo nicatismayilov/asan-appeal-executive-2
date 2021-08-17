@@ -1,0 +1,12 @@
+.media-display {
+  width: 100%;
+  background-color: #1f1d2c;
+  border-radius: 20px;
+  overflow: hidden;
+
+  &--image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
+}

@@ -84,6 +84,8 @@ const Requests: React.FC = () => {
 
 	const handleSearch = useCallback(
 		(filters: FiltersType) => {
+			console.log("fired");
+
 			const dateFormat = "dd.MM.yyyy HH:mm:ss";
 			const startDateStr = filters.startDateStr && format(filters.startDateStr, dateFormat);
 			const endDateStr = filters.endDateStr && format(filters.endDateStr, dateFormat);

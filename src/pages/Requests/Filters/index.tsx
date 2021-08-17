@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence, Variants, Transition } from "framer-motion";
 import { useFormik } from "formik";
@@ -53,11 +53,16 @@ const Filters: React.FC<Props> = (props) => {
 	const formik = useFormik({
 		initialValues,
 		onSubmit: handleFormikSubmit,
+		onReset: handleFormikReset,
 	});
-	const { values, setFieldValue, handleSubmit, handleReset } = formik;
+	const { values, setFieldValue, handleSubmit, handleReset, dirty } = formik;
 
 	function handleFormikSubmit(values: FiltersType) {
 		onSearch(values);
+	}
+
+	function handleFormikReset() {
+		onSearch({});
 	}
 
 	const handleExecutiveChange = useCallback(
@@ -160,10 +165,6 @@ const Filters: React.FC<Props> = (props) => {
 
 		return range;
 	}, [values.endDateStr, values.startDateStr]);
-
-	useEffect(() => {
-		if (Object.keys(values).length === 0) onSearch({});
-	}, [onSearch, values]);
 
 	return (
 		<div className='p-relative' style={{ position: "relative" }}>
@@ -305,7 +306,7 @@ const Filters: React.FC<Props> = (props) => {
 							</Button>
 
 							<div className='ml-6'>
-								<Button type='reset' form={formId}>
+								<Button type='reset' form={formId} disabled={!dirty}>
 									<Icon icon='broom' className='mr-2' />
 									Təmizlə
 								</Button>

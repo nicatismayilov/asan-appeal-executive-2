@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 
-import icons from "./icons";
+import icons from "./components/icons";
 
 interface Props {
 	icon: string;

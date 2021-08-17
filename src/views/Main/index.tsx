@@ -1,7 +1,10 @@
-import { useState, useMemo, useCallback, useEffect, CSSProperties } from "react";
+import { useState, useMemo, useCallback, useEffect, CSSProperties, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRect } from "@reach/rect";
 
 import { checkUserSession } from "store/user/actions";
+import { setMainContentHeight } from "store/layout/actions";
+
 import { selectUserLoading } from "store/user/selectors";
 
 import Header from "layout/Header";
@@ -18,6 +21,8 @@ const Main: React.FC = () => {
 	const userLoading = useSelector(selectUserLoading);
 	const [loading, setLoading] = useState(true);
 	const [expanded, setExpanded] = useState(getSidebarExpand());
+	const mainContentRef = useRef<HTMLDivElement>(null);
+	const mainContentRect = useRect(mainContentRef);
 
 	const handleToggleExpand = useCallback(() => {
 		setExpanded((e) => !e);
@@ -45,12 +50,18 @@ const Main: React.FC = () => {
 		dispatch(checkUserSession());
 	}, [dispatch]);
 
+	useEffect(() => {
+		if (mainContentRect) {
+			dispatch(setMainContentHeight(mainContentRect.height));
+		}
+	}, [dispatch, mainContentRect]);
+
 	if (userLoading || loading) return <PageLoader />;
 	return (
 		<div className='main'>
 			<Header />
 
-			<div className='main-content'>
+			<div ref={mainContentRef} className='main-content'>
 				<div className='transition sidebar-container' style={sidebarWrapperStyles}>
 					<div className='w-20vw h-100'>
 						<Sidebar expanded={expanded} onToggleExpand={handleToggleExpand} />

@@ -10,6 +10,7 @@ import requestsReducer from "./requests/reducer";
 import structuresReducer from "./structures/reducer";
 import employeesReducer from "./employees/reducer";
 import categoriesReducer from "./categories/reducer";
+import layoutReducer from "./layout/reducer";
 
 import { Action as AlertsAction } from "./alerts/types";
 import { Action as AuthAction } from "./auth/types";
@@ -18,6 +19,7 @@ import { Action as RequestsAction } from "./requests/types";
 import { Action as StructuresAction } from "./structures/types";
 import { Action as EmployeesAction } from "./employees/types";
 import { Action as CategoriesAction } from "./categories/types";
+import { Action as LayoutAction } from "./layout/types";
 
 const appReducer = combineReducers({
 	alertsReducer,
@@ -27,6 +29,7 @@ const appReducer = combineReducers({
 	structuresReducer,
 	employeesReducer,
 	categoriesReducer,
+	layoutReducer,
 });
 
 export type StoreState = ReturnType<typeof appReducer>;
@@ -37,7 +40,8 @@ export type StoreAction =
 	| RequestsAction
 	| StructuresAction
 	| EmployeesAction
-	| CategoriesAction;
+	| CategoriesAction
+	| LayoutAction;
 
 const persistConfig: PersistConfig<StoreState> = {
 	key: "root",

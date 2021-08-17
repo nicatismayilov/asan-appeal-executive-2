@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useParams, useHistory, useRouteMatch } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useRect } from "@reach/rect";
@@ -8,15 +8,19 @@ import { getRequest } from "store/requests/actions";
 
 import { selectRequest, selectRequestLoading } from "store/requests/selectors";
 import { selectActiveMenu } from "store/user/selectors";
+import { selectMainContentHeight } from "store/layout/selectors";
 
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
 import Map from "components/Map";
-import MediaGallery from "components/MediaGallery";
+import MediaGallery from "layoutComponents/MediaGallery";
+import MediaDisplay from "layoutComponents/MediaDisplay";
 
 import HistoryItem from "./components/HistoryItem";
 import TitleItem from "./components/TitleItem";
 import Form from "./components/Form";
+
+import { RequestFile } from "types/requests";
 
 import getRequestNumberString from "utils/getRequestNumberString";
 import getFullName from "utils/getFullName";
@@ -39,8 +43,9 @@ const RequestDetails: React.FC = () => {
 	const requestLoading = useSelector(selectRequestLoading);
 	const request = useSelector(selectRequest);
 	const activeMenu = useSelector(selectActiveMenu);
-
+	const mainContentHeight = useSelector(selectMainContentHeight);
 	const [historyActive, setHistoryActive] = useState(false);
+	const [activeFile, setActiveFile] = useState<RequestFile>();
 	const mapContainerRef = useRef<HTMLDivElement>(null);
 	const mapContainerRect = useRect(mapContainerRef, { observe: true });
 
@@ -48,6 +53,21 @@ const RequestDetails: React.FC = () => {
 		const parentUrl = match.url.split(`/${params.id}`)[0];
 		history.push(parentUrl);
 	};
+
+	const handleMediaGalleryChange = useCallback((f: RequestFile) => {
+		setActiveFile(f);
+	}, []);
+
+	const requestCoords = useMemo(() => {
+		return { lat: request.latitude, lng: request.longitude };
+	}, [request.latitude, request.longitude]);
+
+	const activeFileCoords = useMemo(() => {
+		return {
+			lat: activeFile?.latitude || 0,
+			lng: activeFile?.longitude || 0,
+		};
+	}, [activeFile?.latitude, activeFile?.longitude]);
 
 	useEffect(() => {
 		const id = params.id;
@@ -139,10 +159,10 @@ const RequestDetails: React.FC = () => {
 							<div className='card pa-10' style={{ borderRadius: 20 }}>
 								<Map
 									width='100%'
-									height={(mapContainerRect?.width || 0) * 0.5}
+									height={Math.min((mapContainerRect?.width || 0) * 0.5, mainContentHeight)}
 									longitude={request.longitude}
 									latitude={request.latitude}
-									center={{ lat: request.latitude, lng: request.longitude }}
+									center={requestCoords}
 									zoom={15}
 								/>
 							</div>
@@ -150,10 +170,37 @@ const RequestDetails: React.FC = () => {
 
 						<div className='mb-10 card pa-10'>
 							<div className='mb-10'>
-								<MediaGallery files={files} />
+								<div className='row'>
+									<div className='col-7'>
+										<MediaDisplay file={activeFile} />
+									</div>
+
+									<div className='col-5'>
+										<div className='px-10'>
+											<div className='d-flex flex-column'>
+												<div className='headline font-weight-medium gray-3--text text-left mb-10'>
+													{activeFile && activeFile.longitude && activeFile.latitude
+														? "Faylın xəritədə yeri"
+														: "Fayla uyğun koordinat yoxdur"}
+												</div>
+
+												{activeFile && activeFile.longitude && activeFile.latitude && (
+													<Map
+														width='100%'
+														height={300}
+														longitude={activeFile.longitude}
+														latitude={activeFile.latitude}
+														center={activeFileCoords}
+														zoom={15}
+													/>
+												)}
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 
-							<MediaGallery files={files} />
+							<MediaGallery files={files} onChange={handleMediaGalleryChange} />
 						</div>
 					</>
 				)}

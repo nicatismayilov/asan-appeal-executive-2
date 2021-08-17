@@ -1,6 +1,6 @@
 import { Category } from "./category";
 import { Structure } from "./structures";
-import { File } from "components/MediaGallery";
+import { File } from "types/file";
 
 export interface Request {
 	appealDate: string;
@@ -71,14 +71,15 @@ export interface RequestAddress {
 }
 
 export interface RequestFile extends File {
-	distance: number;
-	latitude: number;
-	longitude: number;
+	distance?: number;
+	latitude?: number;
+	longitude?: number;
 	length?: number;
 	sameAddress: boolean;
 	uploadDateStr: string;
 	address?: string;
 	executive?: Structure;
+	madeByMobileApp?: boolean;
 }
 
 export interface RequestTextHistory {
