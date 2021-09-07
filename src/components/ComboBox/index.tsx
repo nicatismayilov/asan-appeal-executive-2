@@ -13,6 +13,7 @@ import ScrollBar from "components/Scrollbar";
 import ComboboxValueSlot from "./components/ComboboxValueSlot";
 
 import escapeRegExp from "./utils/escapeRegExp";
+import computeStyles from "./utils/computeStyles";
 import generateKey from "utils/generateKey";
 
 import { ReactComponent as ArrowDown } from "./assets/arrow-down.svg";
@@ -25,8 +26,9 @@ export const selectTransition: Transition = {
 };
 
 export const variants: Variants = {
-	initial: { scaleY: 0.5, opacity: 0 },
-	animate: { scaleY: 1, opacity: 1 },
+	initial: { y: -10, opacity: 0 },
+	animate: { y: 0, opacity: 1 },
+	exit: { y: -5, opacity: 0 },
 };
 
 type OptionsRefMap = { [id: string]: React.RefObject<HTMLDivElement> };
@@ -64,12 +66,12 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 		loading = false,
 	} = props;
 	const { onChange, idFromValue, render } = props;
-	const [optionsVisible, setOptionsVisible] = useState(false);
+	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const [search, setSearch] = useState("");
 	const [searchedOption, setSearchedOption] = useState<T>();
 	const [optionsRefMap, setOptionsRefMap] = useState<OptionsRefMap>({});
-	const [optionsPos] = useState<"top" | "bottom">("top");
-	const optionsWrapperRef = useRef<HTMLDivElement>(null);
+	const [dropdownPosition] = useState<"top" | "bottom">("top");
+	const dropdownRef = useRef<HTMLDivElement>(null);
 	const searchRef = useRef<HTMLInputElement>(null);
 	const componentRef = useRef<HTMLDivElement>(null);
 	const searchResetBtnRef = useRef<HTMLButtonElement>(null);
@@ -77,14 +79,15 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 	const selectKey = useRef(generateKey());
 	const { height: windowHeight } = useWindowSize();
 	const rect = useRect(componentRef);
+	// const dropdownRect = useRect(dropdownRef);
 
 	useClickOutside({
-		ref: [componentRef, optionsWrapperRef, searchResetBtnRef],
+		ref: [componentRef, dropdownRef, searchResetBtnRef],
 		handler: handleClickOutside,
 	});
 
 	function handleClickOutside() {
-		setOptionsVisible(false);
+		setDropdownOpen(false);
 	}
 
 	const selectedOptionsMap = useMemo(() => {
@@ -92,26 +95,21 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 	}, [idFromValue, values]);
 
 	// inline styles
-	const selectStyle = useMemo<React.CSSProperties>(() => {
-		if (rect) {
-			const topPos = rect.bottom + 2.5;
-			const bottomPos = windowHeight - (rect.y - 2.5);
+	const selectStyle = useMemo(() => {
+		const styles = computeStyles({
+			rect,
+			windowHeight,
+			position: dropdownPosition,
+		});
 
-			return {
-				width: rect.width,
-				top: optionsPos === "top" ? topPos : "auto",
-				bottom: optionsPos === "bottom" ? bottomPos : "auto",
-				left: rect.x,
-				transformOrigin: optionsPos === "top" ? "top center" : "bottom center",
-			};
-		} else return {};
-	}, [optionsPos, rect, windowHeight]);
+		return styles;
+	}, [dropdownPosition, rect, windowHeight]);
 
 	const arrowDownStyle = useMemo<React.CSSProperties>(() => {
 		return {
-			transform: optionsVisible ? "translateY(-50%) rotate(180deg)" : "translateY(-50%)",
+			transform: dropdownOpen ? "translateY(-50%) rotate(180deg)" : "translateY(-50%)",
 		};
-	}, [optionsVisible]);
+	}, [dropdownOpen]);
 	//
 
 	// classnames
@@ -120,10 +118,10 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 			"combobox-field": true,
 			"combobox-field--error": error,
 			"combobox-field--loading": loading,
-			"combobox-field--focus": optionsVisible,
+			"combobox-field--focus": dropdownOpen,
 			"combobox-field--readonly": readonly,
 		});
-	}, [error, loading, optionsVisible, readonly]);
+	}, [error, loading, dropdownOpen, readonly]);
 
 	const hintClass = useMemo(() => {
 		return classnames({
@@ -144,7 +142,7 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 	// 	if (!readonly) {
 	// 		searchRef.current?.focus();
 
-	// 		if (!loading) setOptionsVisible((optionsVisible) => !optionsVisible);
+	// 		if (!loading) setDropdownOpen((dropdownOpen) => !dropdownOpen);
 	// 	}
 	// };
 
@@ -153,7 +151,11 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 		onChange && onChange(newValues);
 	};
 
-	const handleFieldClick = () => !readonly && setOptionsVisible((prev) => !prev);
+	const handleToggleDropdownOpen = () => {
+		if (readonly) return;
+
+		setDropdownOpen((prev) => !prev);
+	};
 
 	const handleSelectValue = (value: T) => {
 		if (selectedOptionsMap[idFromValue(value)])
@@ -166,13 +168,13 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 
 	const handleArrowDownClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
 		e.stopPropagation();
-		if (!loading) setOptionsVisible((optionsVisible) => !optionsVisible);
+		if (!loading) setDropdownOpen((dropdownOpen) => !dropdownOpen);
 	};
 
 	const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.stopPropagation();
 
-		if (optionsVisible) searchRef.current?.focus();
+		if (dropdownOpen) searchRef.current?.focus();
 
 		onChange([]);
 	};
@@ -183,20 +185,20 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 
 	// useEffect(() => {
 	// 	// const top = scrollbarRef.current?.scrollTop;
-	// 	// if (optionsVisible) {
+	// 	// if (dropdownOpen) {
 	// 	// 	searchRef.current?.focus();
 	// 	// 	if (value && scrollbarRef.current)
 	// 	// 		scrollbarRef.current.scrollTop = optionsRefMap[idFromValue(value)].current?.offsetTop || 0;
 	// 	// } else searchRef.current?.blur();
-	// 	// if (!optionsVisible && top && top !== 0)
+	// 	// if (!dropdownOpen && top && top !== 0)
 	// 	// 	setTimeout(() => {
 	// 	// 		if (scrollbarRef.current) scrollbarRef.current.scrollTop = 0;
 	// 	// 	}, 150);
-	// }, [optionsVisible, optionsRefMap, value, idFromValue]);
+	// }, [dropdownOpen, optionsRefMap, value, idFromValue]);
 
 	useEffect(() => {
 		const newMap = options.reduce(
-			(acc, option) => ({ ...acc, [idFromValue(option)]: createRef() }),
+			(acc, option) => ({ ...acc, [idFromValue(option)]: createRef<HTMLDivElement>() }),
 			{}
 		);
 
@@ -227,14 +229,29 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 	}, [values]);
 
 	// useLayoutEffect(() => {
-	// 	if (optionsVisible) {
-	// 		// const elem = optionsWrapperRef.current;
-	// 		// const bounding = elem?.getBoundingClientRect();
-	// 		// if (bounding && bounding.bottom + (optionsHeight * 35 + 10) > windowHeight)
-	// 		// 	setOptionsPos("bottom");
-	// 		// else setOptionsPos("top");
+	// 	if (dropdownRect && dropdownOpen) {
+	// 		const { height, y } = dropdownRect;
+	// 		const offset = 10;
+
+	// 		console.log(y, height);
+
+	// 		if (y + height + offset >= windowHeight) setDropdownPosition("top");
+	// 		else setDropdownPosition("bottom");
 	// 	}
-	// }, [optionsVisible, windowHeight]);
+	// }, [dropdownOpen, dropdownRect, windowHeight]);
+
+	// useEffect(() => {
+	// 	if (dropdownOpen && optionsWrapperRect) {
+	// 		const { height, y } = optionsWrapperRect;
+	// 		const offset = 10;
+
+	// 		if (y + height + offset >= windowHeight) {
+	// 			setDropdownPosition("top");
+	// 		} else if (y - height - offset <= 0) {
+	// 			setDropdownPosition("bottom");
+	// 		} else setDropdownPosition("bottom");
+	// 	}
+	// }, [dropdownOpen, optionsWrapperRect, windowHeight]);
 
 	return (
 		<div className='select'>
@@ -245,7 +262,7 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 			)}
 
 			<div key={selectKey.current} ref={componentRef} className='p-relative'>
-				<div className={fieldClass} style={style} onClick={handleFieldClick}>
+				<div className={fieldClass} style={style} onClick={handleToggleDropdownOpen}>
 					{readonly && <div className='combobox-readonly' />}
 
 					{/* <motion.input
@@ -306,11 +323,11 @@ function Combobox<T>(props: Props<T>): React.ReactElement | null {
 
 				{createPortal(
 					<AnimatePresence>
-						{optionsVisible && (
+						{dropdownOpen && (
 							<motion.div
-								ref={optionsWrapperRef}
+								ref={dropdownRef}
 								initial='initial'
-								exit='initial'
+								exit='exit'
 								animate='animate'
 								variants={variants}
 								transition={selectTransition}

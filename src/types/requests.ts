@@ -35,7 +35,7 @@ export interface Request {
 	executive: Structure;
 	execStructures?: Structure[];
 	categories?: Category[];
-	type?: RequestType;
+	type?: "COMPLAINT" | "OFFER";
 	priorityLevel?: PriorityName;
 	lastOperation?: string;
 }
@@ -94,10 +94,10 @@ export interface RequestTextHistory {
 	};
 }
 
-export interface RequestType {
+export type RequestType = {
 	name: "COMPLAINT" | "OFFER";
 	title: string;
-}
+};
 
 export interface Action {
 	id: number;

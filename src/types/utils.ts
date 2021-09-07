@@ -157,7 +157,7 @@ export function createDefaultRequest(): Request {
 		address: "",
 		title: "",
 		executive: createDefaultStructure(),
-		type: createDefaultRequestType(),
+		type: "COMPLAINT",
 	};
 }
 

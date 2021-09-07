@@ -1,6 +1,6 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useFormik } from "formik";
+import { FormikProps } from "formik";
 
 import { getExecutives, getExecStructures } from "store/structures/actions";
 import { getCategories } from "store/categories/actions";
@@ -20,6 +20,7 @@ import TextArea from "components/TextArea";
 import Button from "components/Button";
 import TextField from "components/TextField";
 import Select from "components/Select";
+// import TreeSelect from "components/TreeSelect";
 import ComboBox from "components/ComboBox";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
@@ -30,10 +31,10 @@ import { Category } from "types/category";
 import { Priority } from "types/requests";
 
 import { priorities, prioritiesMap } from "types/utils";
-import { validationSchema } from "./form";
 
 interface Props {
 	request: Request;
+	formik: FormikProps<Request>;
 }
 
 const types: RequestType[] = [
@@ -67,7 +68,7 @@ const priorityRender = (p: Priority) => {
 };
 
 const Form: React.FC<Props> = (props) => {
-	const { request } = props;
+	const { formik, request } = props;
 	const dispatch = useDispatch();
 	const executives = useSelector(selectExecutives);
 	const execStructures = useSelector(selectExecStructures);
@@ -78,51 +79,43 @@ const Form: React.FC<Props> = (props) => {
 	const categoriesLoading = useSelector(selectCategoriesLoading);
 	const actionsLoading = useSelector(selectActionLoading);
 	const activeMenu = useSelector(selectActiveMenu);
-	const formik = useFormik({
-		initialValues: request,
-		onSubmit: handleFormikSubmit,
-		enableReinitialize: true,
-		validationSchema,
-		validateOnBlur: false,
-		validateOnChange: false,
-	});
 	const { values, errors, handleChange, handleBlur, handleSubmit, setFieldValue } = formik;
 
-	function handleFormikSubmit(values: Request) {
-		console.log(values);
-	}
+	const type = useMemo(() => {
+		return types.find((t) => t.name === values.type);
+	}, [values.type]);
 
 	const handleExecutiveChange = useCallback(
-		async (value: Structure | undefined) => {
-			await setFieldValue("executive", value);
+		(value: Structure | undefined) => {
+			setFieldValue("executive", value);
 		},
 		[setFieldValue]
 	);
 
 	const handleExecStructresChange = useCallback(
-		async (value: Structure[]) => {
-			await setFieldValue("execStructures", value);
+		(value: Structure[]) => {
+			setFieldValue("execStructures", value);
 		},
 		[setFieldValue]
 	);
 
 	const handleCategoriesChange = useCallback(
-		async (value: Category[]) => {
-			await setFieldValue("categories", value);
+		(value: Category[]) => {
+			setFieldValue("categories", value);
 		},
 		[setFieldValue]
 	);
 
 	const handleTypeChange = useCallback(
-		async (value: RequestType | undefined) => {
-			await setFieldValue("type", value);
+		(value: RequestType | undefined) => {
+			setFieldValue("type", value?.name);
 		},
 		[setFieldValue]
 	);
 
 	const handlePriorityLevelChange = useCallback(
-		async (value: Priority | undefined) => {
-			await setFieldValue("priorityLevel", value?.name);
+		(value: Priority | undefined) => {
+			setFieldValue("priorityLevel", value?.name);
 		},
 		[setFieldValue]
 	);
@@ -161,7 +154,7 @@ const Form: React.FC<Props> = (props) => {
 
 					<div className='col-4'>
 						<Select
-							value={values.type}
+							value={type}
 							options={types}
 							onChange={handleTypeChange}
 							render={typeRender}

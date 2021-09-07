@@ -90,7 +90,7 @@ export function requestsTableColumns(args: Arguments): TableColumn<Request>[] {
 			accessor: "citizen",
 			Header: "Müraciət edən",
 			Cell: ({ value }) => (
-				<div style={{ width: 150 }}>
+				<div style={{ minWidth: 150 }}>
 					{`${value?.lastName} ${value?.firstName} ${value?.fatherName}`}
 				</div>
 			),
@@ -99,7 +99,7 @@ export function requestsTableColumns(args: Arguments): TableColumn<Request>[] {
 			accessor: "citizen",
 			Header: "Telefon nömrəsi",
 			Cell: ({ value }) => (
-				<div style={{ width: 150 }}>{renderPhoneNumber(value?.mobilePhoneNumber || "")}</div>
+				<div style={{ minWidth: 150 }}>{renderPhoneNumber(value?.mobilePhoneNumber || "")}</div>
 			),
 			id: "telephoneNumber",
 		},
@@ -146,7 +146,7 @@ function renderDate(value: string, hasSeconds: boolean) {
 	const timeStr = format(date, "HH:mm");
 
 	return (
-		<div className='d-flex flex-column align-center' style={{ width: 150 }}>
+		<div className='d-flex flex-column align-center' style={{ minWidth: 150 }}>
 			<div className='table-date-tag'>{dateStr}</div>
 
 			<div className='table-date-tag'>{timeStr}</div>

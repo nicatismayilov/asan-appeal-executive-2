@@ -95,7 +95,7 @@ const Header: React.FC = () => {
 				setIsDarkMode(false);
 			}
 
-			EventBus.publishers.themeChange(new ThemeChangeEvent(darkMode ? "dark" : "light"));
+			EventBus.publish("theme-change", new ThemeChangeEvent(darkMode ? "dark" : "light"));
 		}
 	}, [darkMode]);
 

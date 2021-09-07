@@ -12,8 +12,9 @@ import "./styles.scss";
 
 interface Props<T extends File> {
 	files: T[];
+	activeFile: T | undefined;
+	activeIndex?: number;
 	onChange?: (file: T, index: number) => void;
-	onClick?: (file: T, index: number) => void;
 }
 
 const slideStepSize = 400;
@@ -21,8 +22,8 @@ const slideStepSize = 400;
 const transition: Transition = { bounceDamping: 10, bounceStiffness: 100 };
 
 const MediaGallery = <T extends File>(props: Props<T>) => {
-	const { files, onChange, onClick } = props;
-	const [activeItem, setActiveItem] = useState({ file: files[0], index: 0 });
+	const { files, activeFile, activeIndex = -1, onChange } = props;
+
 	const [x, setX] = useState(0);
 	const [canPrevious, setCanPrevious] = useState(false);
 	const [canNext, setCanNext] = useState(false);
@@ -33,10 +34,9 @@ const MediaGallery = <T extends File>(props: Props<T>) => {
 
 	const handleMediaItemClick = useCallback(
 		(file: T, index: number) => {
-			onClick?.(file, index);
-			setActiveItem({ file, index });
+			onChange?.(file, index);
 		},
-		[onClick]
+		[onChange]
 	);
 
 	const handleNext = () => {
@@ -65,10 +65,6 @@ const MediaGallery = <T extends File>(props: Props<T>) => {
 		}
 	}, [containerRect, galleryRect, x]);
 
-	useEffect(() => {
-		onChange?.(activeItem.file, activeItem.index);
-	}, [activeItem.file, activeItem.index, onChange]);
-
 	return (
 		<div className='media-gallery-wrapper'>
 			<div className='media-gallery-container' ref={containerRef}>
@@ -80,7 +76,7 @@ const MediaGallery = <T extends File>(props: Props<T>) => {
 				>
 					{files.map((file, idx) => {
 						const key = file.path + idx.toString();
-						const active = activeItem.file.path === file.path && activeItem.index === idx;
+						const active = activeFile?.path === file.path && activeIndex === idx;
 
 						return (
 							<MediaItem
@@ -108,7 +104,7 @@ const MediaGallery = <T extends File>(props: Props<T>) => {
 				disabled={!canNext}
 				onClick={handleNext}
 			>
-				<Icon icon='double-up' />
+				<Icon onClick={(e) => e.stopPropagation()} icon='double-up' />
 			</button>
 		</div>
 	);

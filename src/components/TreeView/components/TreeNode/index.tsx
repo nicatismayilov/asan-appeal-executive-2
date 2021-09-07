@@ -101,8 +101,8 @@ const TreeNode = <T,>(props: Props<T>) => {
 		onLoad(node);
 	};
 
-	const handleCheck = useCallback(
-		(value: boolean) => {
+	const handleCheckboxChange = useCallback(
+		(value: boolean | "indefinite") => {
 			onCheck(parseProp(id, node), value, node);
 		},
 		[id, node, onCheck]
@@ -154,7 +154,10 @@ const TreeNode = <T,>(props: Props<T>) => {
 				)}
 
 				{checkable && (
-					<Checkbox value={context.checkedKeysMap[parseProp(id, node)]} onCheck={handleCheck} />
+					<Checkbox
+						value={context.checkedKeysMap[parseProp(id, node)]}
+						onChange={handleCheckboxChange}
+					/>
 				)}
 
 				<div className='tv-node-title-text'>{parseProp(title, node)}</div>

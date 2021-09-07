@@ -1,17 +1,25 @@
 import { Menu } from "types/common";
 
+export type EventType = "menus-load" | "theme-change";
+
 /* Base Event */
 export interface IBaseEvent {
 	id: string;
-	name: string;
+	type: EventType;
 	timestamp: Date;
 }
 
-/* Events */
+/* Event Interfaces */
 export interface IMenusLoad extends IBaseEvent {
 	menu: Menu;
 }
 
 export interface IThemeChange extends IBaseEvent {
 	theme: "light" | "dark";
+}
+
+/* Global Events Interface */
+export interface Events {
+	"menus-load": IMenusLoad;
+	"theme-change": IThemeChange;
 }

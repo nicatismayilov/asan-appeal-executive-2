@@ -4,13 +4,22 @@ import { ActionTypes, Action, RequestsReducerState } from "./types";
 const initialState: RequestsReducerState = {
 	requests: [],
 	problems: [],
-	requestsLoading: false,
-	error: "",
-	totalCount: 0,
-	selectedRequest: createDefaultRequest(),
-	requestLoading: false,
+	joinedRequests: [],
 	actions: [],
+	selectedRequest: createDefaultRequest(),
+	nearRequests: [],
+
+	totalCount: 0,
+	joinedRequestsTotalCount: 0,
+	nearRequestsTotalCount: 0,
+
+	requestsLoading: false,
+	requestLoading: false,
 	actionsLoading: false,
+	joinedRequestsLoading: false,
+	nearRequestsLoading: false,
+
+	error: "",
 };
 
 const reducer = (state = initialState, action: Action): RequestsReducerState => {
@@ -86,6 +95,48 @@ const reducer = (state = initialState, action: Action): RequestsReducerState => 
 			return {
 				...state,
 				actionsLoading: false,
+				error: action.payload,
+			};
+
+		case ActionTypes.GET_JOINED_REQUESTS:
+			return {
+				...state,
+				joinedRequestsLoading: true,
+			};
+
+		case ActionTypes.GET_JOINED_REQUESTS_SUCCESS:
+			return {
+				...state,
+				joinedRequests: action.payload.entities,
+				joinedRequestsLoading: false,
+				joinedRequestsTotalCount: action.payload.totalCount,
+			};
+
+		case ActionTypes.GET_JOINED_REQUESTS_FAILURE:
+			return {
+				...state,
+				joinedRequestsLoading: false,
+				error: action.payload,
+			};
+
+		case ActionTypes.GET_NEAR_REQUESTS:
+			return {
+				...state,
+				nearRequestsLoading: true,
+			};
+
+		case ActionTypes.GET_NEAR_REQUESTS_SUCCESS:
+			return {
+				...state,
+				nearRequests: action.payload.entities,
+				nearRequestsLoading: false,
+				nearRequestsTotalCount: action.payload.totalCount,
+			};
+
+		case ActionTypes.GET_NEAR_REQUESTS_FAILURE:
+			return {
+				...state,
+				nearRequestsLoading: false,
 				error: action.payload,
 			};
 

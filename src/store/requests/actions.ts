@@ -1,6 +1,17 @@
-import { GetActionsParams, GetRequestParams, GetRequestsParams } from "apiServices/requestsService";
+import {
+	GetActionsParams,
+	GetJoinedRequestsParams,
+	GetNearRequestsParams,
+	GetRequestParams,
+	GetRequestsParams,
+} from "apiServices/requestsService";
 import { Request, Action as RequestAction } from "types/requests";
-import { ActionTypes, Action, GetRequestsSuccessPayload } from "./types";
+import {
+	ActionTypes,
+	Action,
+	GetRequestsSuccessPayload,
+	GetJoinedRequestsSuccessPayload,
+} from "./types";
 
 export const getRequests = (params: GetRequestsParams): Action => {
 	return {
@@ -69,5 +80,39 @@ export const getActionsSuccess = (payload: RequestAction[]): Action => ({
 
 export const getActionsFailure = (payload: string): Action => ({
 	type: ActionTypes.GET_ACTIONS_FAILURE,
+	payload,
+});
+
+/*------------------------------------------------------------------------------------------------*/
+
+export const getJoinedRequests = (payload: GetJoinedRequestsParams): Action => ({
+	type: ActionTypes.GET_JOINED_REQUESTS,
+	payload,
+});
+
+export const getJoinedRequestsSuccess = (payload: GetJoinedRequestsSuccessPayload): Action => ({
+	type: ActionTypes.GET_JOINED_REQUESTS_SUCCESS,
+	payload,
+});
+
+export const getJoinedRequestsFailure = (payload: string): Action => ({
+	type: ActionTypes.GET_JOINED_REQUESTS_FAILURE,
+	payload,
+});
+
+/*------------------------------------------------------------------------------------------------*/
+
+export const getNearRequests = (payload: GetNearRequestsParams): Action => ({
+	type: ActionTypes.GET_NEAR_REQUESTS,
+	payload,
+});
+
+export const getNearRequestsSuccess = (payload: GetJoinedRequestsSuccessPayload): Action => ({
+	type: ActionTypes.GET_NEAR_REQUESTS_SUCCESS,
+	payload,
+});
+
+export const getNearRequestsFailure = (payload: string): Action => ({
+	type: ActionTypes.GET_NEAR_REQUESTS_FAILURE,
 	payload,
 });

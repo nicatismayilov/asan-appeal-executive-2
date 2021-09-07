@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getExecStructures } from "store/structures/actions";
 import { selectExecStructures, selectExecStructuresLoading } from "store/structures/selectors";
 
 import Select from "components/Select";
@@ -22,13 +20,8 @@ const execStructureRender = (s: Structure) => s.name;
 
 const ParentOfficeSelect: React.FC<Props> = (props) => {
 	const { value, onChange, active } = props;
-	const dispatch = useDispatch();
 	const execStructures = useSelector(selectExecStructures);
 	const execStructuresLoading = useSelector(selectExecStructuresLoading);
-
-	useEffect(() => {
-		dispatch(getExecStructures());
-	}, [dispatch]);
 
 	if (!active) return null;
 

@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getSubOffices } from "store/structures/actions";
 import { selectSubOffices, selectSubOfficesLoading } from "store/structures/selectors";
 
 import Select from "components/Select";
@@ -22,13 +20,8 @@ const subOfficeRender = (s: Structure) => s.name;
 
 const OfficeSelect: React.FC<Props> = (props) => {
 	const { value, onChange, active } = props;
-	const dispatch = useDispatch();
 	const subOffices = useSelector(selectSubOffices);
 	const subOfficesLoading = useSelector(selectSubOfficesLoading);
-
-	useEffect(() => {
-		dispatch(getSubOffices());
-	}, [dispatch]);
 
 	if (!active) return null;
 

@@ -1,9 +1,11 @@
 import { SVGProps } from "react";
 
-import icons from "./components/icons";
+import icons, { IconName } from "./components/icons";
+
+export type { IconName } from "./components/icons";
 
 interface Props {
-	icon: string;
+	icon: IconName;
 }
 
 const Icon: React.FC<Props & SVGProps<SVGSVGElement>> = (props) => {

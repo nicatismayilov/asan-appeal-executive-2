@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getRepresentations, resetRepresentations } from "store/structures/actions";
 import { selectRepresentations, selectRepresentationsLoading } from "store/structures/selectors";
 
 import Select from "components/Select";
@@ -23,15 +21,9 @@ const representationRender = (s: Structure) => s.name;
 
 const RepresentationSelect: React.FC<Props> = (props) => {
 	const { value, onChange, active, parentId } = props;
-	const dispatch = useDispatch();
 	const representations = useSelector(selectRepresentations);
 	const representationsLoading = useSelector(selectRepresentationsLoading);
 	const optionsEmptyText = parentId ? "Məlumat yoxdur" : "İcra orqanı seçin";
-
-	useEffect(() => {
-		if (parentId) dispatch(getRepresentations(parentId));
-		else dispatch(resetRepresentations());
-	}, [dispatch, parentId]);
 
 	if (!active) return null;
 

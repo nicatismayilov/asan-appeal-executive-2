@@ -40,3 +40,33 @@ export const selectActionLoading = createSelector(
 	[selectRequestsReducer],
 	(reducer) => reducer.actionsLoading
 );
+
+export const selectJoinedRequests = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.joinedRequests
+);
+
+export const selectJoinedRequestsLoading = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.joinedRequestsLoading
+);
+
+export const selectJoinedRequestsTotalCount = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.joinedRequestsTotalCount
+);
+
+export const selectNearRequests = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.nearRequests
+);
+
+export const selectNearRequestsLoading = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.nearRequestsLoading
+);
+
+export const selectNearRequestsTotalCount = createSelector(
+	[selectRequestsReducer],
+	(reducer) => reducer.nearRequestsTotalCount
+);

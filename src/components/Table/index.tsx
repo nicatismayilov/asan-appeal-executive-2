@@ -1,10 +1,19 @@
 import { useState, useEffect, useCallback, memo, useRef, ReactNode, useMemo } from "react";
-import { useTable, usePagination, useSortBy, Column, SortingRule } from "react-table";
+import {
+	useTable,
+	usePagination,
+	useSortBy,
+	Column,
+	SortingRule,
+	useRowSelect,
+	ColumnInstance,
+} from "react-table";
 import classnames from "classnames";
 
 import TablePagination, { RefObject as TablePaginationRef } from "./components/TablePagination";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
+import Checkbox from "components/Checkbox";
 
 import { TableColumn } from "./types";
 
@@ -23,11 +32,13 @@ interface Props<T extends object> {
 	virtual?: boolean;
 	defaultPageIndex?: number;
 	defaultPageSize?: number;
+	defaultSelectedRows?: { [id: string]: boolean } | undefined;
 	pageSizeOptions?: number[];
 	showPageSizeOptions?: boolean;
+	checkable?: boolean;
 	showTotal?: (total: number, range: [number, number]) => void | ReactNode;
-
 	onChange?: (p: Pagination, sorter: Sorter<T>) => void;
+	onSelectionChange?: (selectedRows: T[]) => void;
 }
 
 export interface Pagination {
@@ -47,8 +58,11 @@ const Table = <T extends object>(props: Props<T>) => {
 		showPageSizeOptions = false,
 		showTotal,
 		pageSizeOptions = [],
+		checkable = false,
+		title,
+		onChange,
+		onSelectionChange,
 	} = props;
-	const { onChange } = props;
 	const [controlledPageSize, setControlledPageSize] = useState(defaultPageSize);
 	const paginationRef = useRef<TablePaginationRef>(null);
 
@@ -59,6 +73,11 @@ const Table = <T extends object>(props: Props<T>) => {
 		};
 	}, []);
 
+	const getRowId = useCallback((row: T, relativeIndex: number) => {
+		if (row["id"]) return row["id"];
+		else return relativeIndex;
+	}, []);
+
 	const tableInstance = useTable(
 		{
 			columns,
@@ -66,13 +85,65 @@ const Table = <T extends object>(props: Props<T>) => {
 			manualPagination: true,
 			pageCount: Math.ceil(totalCount / controlledPageSize),
 			manualSortBy: true,
-			initialState: { pageIndex: defaultPageIndex, pageSize: defaultPageSize },
+			initialState: {
+				pageIndex: defaultPageIndex,
+				pageSize: defaultPageSize,
+			},
 			defaultColumn,
 			autoResetSortBy: false,
 			disableSortBy: data.length === 0,
+			getRowId,
 		},
 		useSortBy,
-		usePagination
+		usePagination,
+		useRowSelect,
+		(hooks) => {
+			hooks.visibleColumns.push((columns) => {
+				interface CheckboxColumn extends Pick<ColumnInstance, "id" | "Header" | "Cell"> {}
+
+				const checkboxColumn: CheckboxColumn = {
+					id: "selection",
+					Header: ({ getToggleAllRowsSelectedProps, toggleAllRowsSelected }) => {
+						const props = getToggleAllRowsSelectedProps();
+
+						const handleChange = (value: boolean | "indefinite") => {
+							if (value === "indefinite" || value === true) toggleAllRowsSelected(true);
+							else toggleAllRowsSelected(false);
+						};
+
+						return (
+							<div className='d-flex justify-center align-center'>
+								<Checkbox
+									value={props.indeterminate ? "indefinite" : props.checked || false}
+									onChange={handleChange}
+								/>
+							</div>
+						);
+					},
+					Cell: ({ row }) => {
+						const { getToggleRowSelectedProps, toggleRowSelected } = row;
+						const props = getToggleRowSelectedProps();
+
+						const handleChange = (value: boolean | "indefinite") => {
+							if (value === "indefinite" || value === true) toggleRowSelected(true);
+							else toggleRowSelected(false);
+						};
+
+						return (
+							<div style={{ minWidth: 25 }} className='d-flex justify-center align-center'>
+								<Checkbox
+									value={props.indeterminate ? "indefinite" : props.checked || false}
+									onChange={handleChange}
+								/>
+							</div>
+						);
+					},
+				};
+
+				if (checkable) return [checkboxColumn, ...columns];
+				else return columns;
+			});
+		}
 	);
 
 	const {
@@ -89,6 +160,7 @@ const Table = <T extends object>(props: Props<T>) => {
 		canPreviousPage,
 		setPageSize,
 		gotoPage,
+		selectedFlatRows,
 	} = tableInstance;
 	const { pageIndex, pageSize, sortBy } = state;
 
@@ -112,13 +184,16 @@ const Table = <T extends object>(props: Props<T>) => {
 	}, [data, serverSide]);
 
 	useEffect(() => {
-		if (onChange) {
-			onChange({ pageIndex, pageSize }, sortBy);
-		}
+		onChange?.({ pageIndex, pageSize }, sortBy);
 	}, [onChange, pageSize, pageIndex, sortBy]);
+
+	useEffect(() => {
+		onSelectionChange?.(selectedFlatRows.map((row) => row.original));
+	}, [onSelectionChange, selectedFlatRows]);
 
 	return (
 		<div className='table-container'>
+			{title && <div className='table-title'>{title}</div>}
 			<div className='pa-10 pt-6 d-flex justify-end'>
 				{totalCount > 0 && (
 					<TablePagination
@@ -139,7 +214,6 @@ const Table = <T extends object>(props: Props<T>) => {
 					/>
 				)}
 			</div>
-
 			<div
 				className={classnames({
 					"table-area": true,
@@ -216,7 +290,6 @@ const Table = <T extends object>(props: Props<T>) => {
 					</div>
 				)}
 			</div>
-
 			<div className='pa-10 pt-6 d-flex justify-end'>
 				{totalCount > 0 && (
 					<TablePagination

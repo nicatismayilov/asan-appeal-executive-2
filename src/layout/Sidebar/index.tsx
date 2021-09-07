@@ -14,7 +14,7 @@ import {
 import { setActiveMenu } from "store/user/actions";
 
 import Scrollbar from "components/Scrollbar";
-import Icon from "components/Icon";
+import Icon, { IconName } from "components/Icon";
 import Tooltip from "components/Tooltip";
 import Badge from "components/Badge";
 import Spinner from "components/Spinner";
@@ -69,7 +69,7 @@ const Sidebar: React.FC<Props> = (props) => {
 	}, [canUseAdminPanel, history, match.url]);
 
 	useEffect(() => {
-		const unsubscribe = EventBus.subscribers.onMenusLoad((event) => {
+		const unsubscribe = EventBus.subscribe("menus-load", (event) => {
 			const { menu } = event;
 
 			history.push(`${match.url}/requests/${menu.label}`);
@@ -120,7 +120,7 @@ const Sidebar: React.FC<Props> = (props) => {
 											<Tooltip content={menu.title} position='right' disabled={expanded}>
 												<div className='navigation__link-icon-wrapper'>
 													<Badge text={badgeText} disabled={isBadgeDisabled}>
-														<Icon className='navigation__link-icon' icon={menu.icon} />
+														<Icon className='navigation__link-icon' icon={menu.icon as IconName} />
 													</Badge>
 												</div>
 											</Tooltip>

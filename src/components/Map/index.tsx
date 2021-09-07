@@ -74,7 +74,7 @@ const Map: React.FC<Props> = (props) => {
 	}, [darkMode]);
 
 	useEffect(() => {
-		const unsubscribe = EventBus.subscribers.onThemeChange((event) => {
+		const unsubscribe = EventBus.subscribe("theme-change", (event) => {
 			const { theme } = event;
 
 			if (theme === "dark") setDarkMode(true);

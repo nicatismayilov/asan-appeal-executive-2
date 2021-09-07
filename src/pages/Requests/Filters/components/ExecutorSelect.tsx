@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getExecutors } from "store/employees/actions";
 import { selectExecutors, selectExecutorsLoading } from "store/employees/selectors";
 
 import Select from "components/Select";
@@ -24,13 +22,8 @@ const executorRender = (e: Employee) => {
 
 const ExecutorSelect: React.FC<Props> = (props) => {
 	const { value, onChange, active } = props;
-	const dispatch = useDispatch();
 	const executors = useSelector(selectExecutors);
 	const executorsLoading = useSelector(selectExecutorsLoading);
-
-	useEffect(() => {
-		dispatch(getExecutors());
-	}, [dispatch]);
 
 	if (!active) return null;
 

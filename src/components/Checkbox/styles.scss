@@ -24,6 +24,8 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    position: relative;
+    height: fit-content;
 
     &--top {
       flex-direction: column-reverse;
@@ -39,6 +41,20 @@
 
     &--left {
       flex-direction: row-reverse;
+    }
+
+    &--disabled {
+      &::after {
+        content: "";
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #8f8d8d9a;
+        z-index: 5;
+        border-radius: 4px;
+      }
     }
   }
 
@@ -62,9 +78,15 @@
     border-color: #4759e4;
   }
 
+  &--indefinite {
+    background-color: #4759e469;
+    border-color: #4759e469;
+  }
+
   &-text {
     font-size: 16px;
     font-weight: 500;
+    line-height: 1;
     user-select: none;
 
     &--top {

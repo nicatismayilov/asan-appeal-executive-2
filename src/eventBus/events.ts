@@ -1,35 +1,25 @@
 import { Menu } from "types/common";
-import { IBaseEvent, IMenusLoad, IThemeChange } from "./types";
+import { EventType, IBaseEvent, IMenusLoad, IThemeChange } from "./types";
 import generateKey from "utils/generateKey";
 
 class BaseEvent implements IBaseEvent {
 	public id: string;
-	public name: string;
 	public timestamp: Date;
 
-	constructor(name: string) {
-		this.name = name;
+	constructor(public type: EventType) {
 		this.id = generateKey();
 		this.timestamp = new Date();
 	}
 }
 
 export class MenusLoadEvent extends BaseEvent implements IMenusLoad {
-	public menu: Menu;
-
-	constructor(menu: Menu) {
-		super("Menus Load");
-
-		this.menu = menu;
+	constructor(public menu: Menu) {
+		super("menus-load");
 	}
 }
 
 export class ThemeChangeEvent extends BaseEvent implements IThemeChange {
-	public theme: "light" | "dark";
-
-	constructor(theme: "light" | "dark") {
-		super("Theme Change");
-
-		this.theme = theme;
+	constructor(public theme: "light" | "dark") {
+		super("theme-change");
 	}
 }

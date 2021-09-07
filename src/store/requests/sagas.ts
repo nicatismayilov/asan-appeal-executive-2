@@ -1,5 +1,12 @@
 import { takeLatest, call, put, select } from "redux-saga/effects";
-import { ActionTypes, GetRequests, GetRequest, GetActions } from "./types";
+import {
+	ActionTypes,
+	GetRequests,
+	GetRequest,
+	GetActions,
+	GetJoinedRequests,
+	GetNearRequests,
+} from "./types";
 import {
 	getRequestsSuccess,
 	getRequestsFailure,
@@ -8,6 +15,10 @@ import {
 	getRequestFailure,
 	getActionsSuccess,
 	getActionsFailure,
+	getJoinedRequestsSuccess,
+	getJoinedRequestsFailure,
+	getNearRequestsFailure,
+	getNearRequestsSuccess,
 } from "./actions";
 import { selectActiveMenu } from "../user/selectors";
 import RequestsService from "apiServices/requestsService";
@@ -59,19 +70,59 @@ function* handleGetActions(action: GetActions) {
 	}
 }
 
+function* handleGetJoinedRequests(action: GetJoinedRequests) {
+	const { payload } = action;
+
+	try {
+		const res = yield call(RequestsService.getJoinedRequests, payload);
+		const { entities, totalCount } = res.data.data;
+
+		yield put(getJoinedRequestsSuccess({ entities, totalCount }));
+	} catch (error) {
+		yield put(getJoinedRequestsFailure(error.message));
+	}
+}
+
+function* handleGetNearRequests(action: GetNearRequests) {
+	const { payload } = action;
+
+	try {
+		const res = yield call(RequestsService.getNearRequests, payload);
+		const { entities, totalCount } = res.data.data;
+
+		yield put(getNearRequestsSuccess({ entities, totalCount }));
+	} catch (error) {
+		yield put(getNearRequestsFailure(error.message));
+	}
+}
+
 // watchers
-export function* watchGetRequests() {
+function* watchGetRequests() {
 	yield takeLatest(ActionTypes.GET_REQUESTS, handleGetRequests);
 }
 
-export function* watchGetRequest() {
+function* watchGetRequest() {
 	yield takeLatest(ActionTypes.GET_REQUEST, handleGetRequest);
 }
 
-export function* watchGetActions() {
+function* watchGetActions() {
 	yield takeLatest(ActionTypes.GET_ACTIONS, handleGetActions);
 }
 
-const requestsSagas = [call(watchGetRequests), call(watchGetRequest), call(watchGetActions)];
+function* watchGetJoinedRequests() {
+	yield takeLatest(ActionTypes.GET_JOINED_REQUESTS, handleGetJoinedRequests);
+}
+
+function* watchGetNearRequests() {
+	yield takeLatest(ActionTypes.GET_NEAR_REQUESTS, handleGetNearRequests);
+}
+
+export const requestsSagas = [
+	call(watchGetRequests),
+	call(watchGetRequest),
+	call(watchGetActions),
+	call(watchGetJoinedRequests),
+	call(watchGetNearRequests),
+];
 
 export default requestsSagas;

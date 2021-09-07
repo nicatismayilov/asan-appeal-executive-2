@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getCategories } from "store/categories/actions";
 import { selectCategories, selectCategoriesLoading } from "store/categories/selectors";
 
 import TreeSelect from "components/TreeSelect";
@@ -22,13 +20,8 @@ const categoryRender = (s: Category) => s.name;
 
 const CategorySelect: React.FC<Props> = (props) => {
 	const { value, onChange, active } = props;
-	const dispatch = useDispatch();
 	const categories = useSelector(selectCategories);
 	const categoriesLoading = useSelector(selectCategoriesLoading);
-
-	useEffect(() => {
-		dispatch(getCategories());
-	}, [dispatch]);
 
 	if (!active) return null;
 

@@ -155,6 +155,8 @@ const Requests: React.FC = () => {
 						showPageSizeOptions
 						pageSizeOptions={pageSizeOptions}
 						serverSide
+						checkable
+						onSelectionChange={(selectedRows) => console.log(selectedRows)}
 					/>
 				)}
 			</div>

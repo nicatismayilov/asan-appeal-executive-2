@@ -58,7 +58,7 @@ const Main: React.FC = () => {
 
 	if (userLoading || loading) return <PageLoader />;
 	return (
-		<div className='main'>
+		<div className='main' id='main'>
 			<Header />
 
 			<div ref={mainContentRef} className='main-content'>

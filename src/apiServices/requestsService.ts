@@ -27,17 +27,17 @@ class RequestsService {
 	}
 
 	public getNearRequests(params: GetNearRequestsParams) {
-		const { longitude, latitude, distance, sameStatus, key } = params;
+		const { longitude, latitude, distance, sameStatus, key, completed = false } = params;
 
 		return axios.get(`/${API_URL.EASY_APPEAL}/v1/requests/nearRequests`, {
-			params: { longitude, latitude, distance, sameStatus, key },
+			params: { longitude, latitude, distance, sameStatus, key, completed },
 		});
 	}
 
 	public getJoinedRequests(params: GetJoinedRequestsParams) {
 		const { limit, offset, key, id } = params;
 
-		return axios.get(`/${API_URL.EASY_APPEAL}/v1/requests/${id}/joinedRequets`, {
+		return axios.get(`/${API_URL.EASY_APPEAL}/v1/requests/${id}/joinedRequests`, {
 			params: { limit, offset, key },
 		});
 	}
@@ -84,6 +84,7 @@ export interface GetNearRequestsParams {
 	distance: number;
 	sameStatus: boolean;
 	key: string;
+	completed?: boolean;
 }
 
 export interface GetJoinedRequestsParams {

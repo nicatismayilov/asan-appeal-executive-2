@@ -1,13 +1,18 @@
-import Observer, { Listener } from "./Observer";
-import { MenusLoadEvent, ThemeChangeEvent } from "./events";
+import Observer, { Listener, IObserver } from "./pubsub";
+import { Events } from "./types";
 
 export * from "./events";
+
+type T = keyof Events;
+
+type ObserversMap = {
+	[Type in T]?: IObserver<Type>;
+};
 
 /* Singleton implementation of Global Event Bus */
 class EventBus {
 	private static instance: EventBus;
-	private MenusLoadObserver = new Observer<MenusLoadEvent>();
-	private ThemeChangeObserver = new Observer<ThemeChangeEvent>();
+	private observers: ObserversMap = {};
 
 	private constructor() {}
 
@@ -19,25 +24,29 @@ class EventBus {
 		return EventBus.instance;
 	}
 
-	public publishers = {
-		menusLoad(event: MenusLoadEvent): void {
-			EventBus.getInstance().MenusLoadObserver.publish(event);
-		},
+	public publish<Type extends T>(type: Type, event: Events[Type]): void {
+		if (!EventBus.getInstance().observers[type]) {
+			EventBus.getInstance().observers = {
+				...EventBus.getInstance().observers,
+				[type]: new Observer<Type>(),
+			};
+		}
 
-		themeChange(event: ThemeChangeEvent): void {
-			EventBus.getInstance().ThemeChangeObserver.publish(event);
-		},
-	};
+		// @ts-ignore
+		EventBus.getInstance().observers[type].publish(event);
+	}
 
-	public subscribers = {
-		onMenusLoad(listener: Listener<MenusLoadEvent>): () => void {
-			return EventBus.getInstance().MenusLoadObserver.subscribe(listener);
-		},
+	public subscribe<Type extends T>(type: Type, listener: Listener<Type>): () => void {
+		if (!EventBus.getInstance().observers[type]) {
+			EventBus.getInstance().observers = {
+				...EventBus.getInstance().observers,
+				[type]: new Observer<Type>(),
+			};
+		}
 
-		onThemeChange(listener: Listener<ThemeChangeEvent>): () => void {
-			return EventBus.getInstance().ThemeChangeObserver.subscribe(listener);
-		},
-	};
+		// @ts-ignore
+		return EventBus.getInstance().observers[type].subscribe(listener);
+	}
 }
 
 const eventBus = EventBus.getInstance();

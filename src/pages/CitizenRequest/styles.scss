@@ -112,11 +112,6 @@
   }
 }
 
-.history-container {
-  margin-top: 20px;
-  border-top: 1px solid var(--history-border-top);
-}
-
 .form-actions-container {
   & > :not(:first-child) {
     margin-left: 12px;
@@ -133,4 +128,16 @@
   padding: 10px 20px;
   width: fit-content;
   margin: 0 auto 10px;
+}
+
+.distance-indicator {
+  border: 1px solid;
+  border-radius: 6px;
+  padding: 12px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  font-size: 20px;
+  line-height: 1;
 }

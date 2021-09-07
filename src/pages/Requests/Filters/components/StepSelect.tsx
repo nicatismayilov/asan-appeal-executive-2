@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getSteps } from "store/structures/actions";
 import { selectSteps, selectStepsLoading } from "store/structures/selectors";
 
 import Select from "components/Select";
@@ -22,13 +20,8 @@ const stepRender = (s: Step) => s.name;
 
 const StepSelect: React.FC<Props> = (props) => {
 	const { value, onChange, active } = props;
-	const dispatch = useDispatch();
 	const steps = useSelector(selectSteps);
 	const stepsLoading = useSelector(selectStepsLoading);
-
-	useEffect(() => {
-		dispatch(getSteps());
-	}, [dispatch]);
 
 	if (!active) return null;
 

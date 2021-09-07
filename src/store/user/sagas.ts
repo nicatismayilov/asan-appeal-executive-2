@@ -62,7 +62,7 @@ function* handleGetMenus() {
 
 		yield put(getMenusSuccess(menus));
 		yield put(setActiveMenu(menus[0]));
-		yield call(EventBus.publishers.menusLoad, new MenusLoadEvent(menus[0]));
+		yield call(EventBus.publish, "menus-load", new MenusLoadEvent(menus[0]));
 	} catch (error) {
 		yield put(getMenusFailure(error.message));
 	}

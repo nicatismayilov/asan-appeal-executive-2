@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { getExecutives } from "store/structures/actions";
 import { selectExecutives, selectExecutivesLoading } from "store/structures/selectors";
 
 import Select from "components/Select";
@@ -22,13 +20,8 @@ const executiveRender = (s: Structure) => s.name;
 
 const ExecutiveSelect: React.FC<Props> = (props) => {
 	const { value, onChange, active } = props;
-	const dispatch = useDispatch();
 	const executives = useSelector(selectExecutives);
 	const executivesLoading = useSelector(selectExecutivesLoading);
-
-	useEffect(() => {
-		dispatch(getExecutives());
-	}, [dispatch]);
 
 	if (!active) return null;
 

@@ -1,7 +1,18 @@
-import { useState, useCallback, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { motion, AnimatePresence, Variants, Transition } from "framer-motion";
 import { useFormik } from "formik";
+
+import {
+	getExecutives,
+	getSubOffices,
+	getExecStructures,
+	getRepresentations,
+	resetRepresentations,
+	getSteps,
+} from "store/structures/actions";
+import { getCategories } from "store/categories/actions";
+import { getExecutors } from "store/employees/actions";
 
 import { selectActiveStep, selectActiveMenu } from "store/user/selectors";
 
@@ -39,14 +50,21 @@ interface Props {
 const animationVariants: Variants = {
 	animate: { y: 0 },
 	initial: { y: "-100%" },
+	exit: { y: "-100%" },
 };
 
-const animationTransition: Transition = { type: "spring", stiffness: 400, damping: 40 };
+const animationTransition: Transition = {
+	type: "spring",
+	stiffness: 200,
+	damping: 26,
+	mass: 1,
+};
 
 const formId = "searchFilters";
 
 const Filters: React.FC<Props> = (props) => {
 	const { onSearch } = props;
+	const dispatch = useDispatch();
 	const activeMenu = useSelector(selectActiveMenu);
 	const activeStep = useSelector(selectActiveStep);
 	const [active, setActive] = useState(false);
@@ -166,6 +184,20 @@ const Filters: React.FC<Props> = (props) => {
 		return range;
 	}, [values.endDateStr, values.startDateStr]);
 
+	useEffect(() => {
+		dispatch(getExecutives());
+		dispatch(getCategories());
+		dispatch(getExecutors());
+		dispatch(getSubOffices());
+		dispatch(getExecStructures());
+		dispatch(getSteps());
+	}, [dispatch]);
+
+	useEffect(() => {
+		if (values.executiveId?.id) dispatch(getRepresentations(values.executiveId?.id));
+		else dispatch(resetRepresentations());
+	}, [dispatch, values.executiveId?.id]);
+
 	return (
 		<div className='p-relative' style={{ position: "relative" }}>
 			<div className='px-10 py-6 d-flex justify-between align-center'>
@@ -188,10 +220,9 @@ const Filters: React.FC<Props> = (props) => {
 			<AnimatePresence>
 				{active && (
 					<motion.div
-						onAnimationComplete={(val) => console.log(val)}
 						initial='initial'
 						animate='animate'
-						exit='initial'
+						exit='exit'
 						variants={animationVariants}
 						transition={animationTransition}
 						className='overflow-hidden w-100 filters-container'
